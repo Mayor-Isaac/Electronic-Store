@@ -1,18 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import React from 'react'
 
-export default function useFetch({url, key}) {
+export default function useFetch({queryFn, key}) {
   const { isPending, error, data } = useQuery({
     queryKey: [key],
-    queryFn: () =>
-      fetch(url).then((res) =>
-        res.json()
-      ),
+    queryFn: queryFn,
   });
 
-  if (isPending) return "Loading...";
-
-  if (error) return "An error has occurred: " + error.message;
-    
-  return data;
+  return { isPending, error, data };
 }

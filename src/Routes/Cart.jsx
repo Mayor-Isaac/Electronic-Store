@@ -3,7 +3,7 @@ import CartContainer from '../Pages/Cart/CartContainer'
 
 export default function Cart() {
   return (
-    <div className='h-full'>
+    <div className='h-screen'>
       <CartContainer />
     </div>
   )

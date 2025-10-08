@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaHome, FaListUl, FaRegUser, FaUser, FaList } from "react-icons/fa";
+import { FaHome, FaListUl, FaRegUser, FaUser } from "react-icons/fa";
 import { HiOutlineShoppingCart, HiShoppingCart } from 'react-icons/hi';
 import { IoHomeOutline } from 'react-icons/io5';
 import { PiListDashesLight } from 'react-icons/pi';

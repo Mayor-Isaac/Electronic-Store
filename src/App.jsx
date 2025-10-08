@@ -11,7 +11,7 @@ import AI from './Routes/AI'
 import Track from './Routes/Track'
 import NotFound from './Routes/NotFound'
 import ProductDetails from './Routes/ProductDetails'
-import { QueryClient } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 function App() {
   const queryClient = new QueryClient();
@@ -20,14 +20,14 @@ function App() {
     <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <Routes>
+          <Route path="/cart" element={<Cart />} />
+          <Route path="ai" element={<AI />} />
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="cart" element={<Cart />} />
           <Route path="product/:id" element={<ProductDetails />} />
           <Route path="checkout" element={<CheckOut />} />
           <Route path="products" element={<ProductListing />} />
-          <Route path="ai" element={<AI />} />
           <Route path="track" element={<Track />} />
         </Route>
           <Route path="*" element={<NotFound />} />
