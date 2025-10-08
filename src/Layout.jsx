@@ -11,12 +11,12 @@ export default function Layout() {
   
   return (
     <div className="flex flex-col h-dvh">
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto h-[calc(100vh-80px)] p-5">
         <Outlet />
       </div>
 
       <footer className=" flex flex-col py-2 gap-1.5 transition ease-in-out min-h-20 bg-[#1A2B33] text-[#91B8C9]">
-        <div className="flex items-center py-5 justify-center gap-8">
+        <div className="flex items-center py-5 justify-center gap-9">
           <Link
             to="/"
             className={`flex flex-col items-center gap-1 ${
@@ -84,7 +84,7 @@ export default function Layout() {
           </Link>
         </div>
 
-        <p className="text-center flex items-center justify-center gap-1.5">
+        <p className="text-center flex items-center justify-center gap-2">
           <span className="font-brand">Tronix</span>{" "}
           <span className="text-[11px]">
             store &copy; {new Date().getFullYear()}

@@ -9,8 +9,9 @@ html{
 }
 body{
   font-family: "Inter", sans-serif;
-  font-size: 1.2rem;
-  color: #333;
+  font-size: 1.3rem;
+  background-color: #121C21;
+  color: #fff;
 }
 .font-brand{
   font-family: "Permanent Marker", cursive;

@@ -1,20 +1,23 @@
 import React from 'react'
 import { Route, Routes } from 'react-router'
 import { BrowserRouter } from 'react-router'
-import Home from './Pages/Home'
 import Layout from './Layout'
-import Profile from './Pages/Profile'
-import Cart from './Pages/Cart'
-import ProductListing from './Pages/ProductListing'
-import CheckOut from './Pages/CheckOut'
-import AI from './Pages/AI'
-import Track from './Pages/Track'
-import NotFound from './Pages/NotFound'
-import ProductDetails from './Pages/ProductDetails'
+import Home from './Routes/Home'
+import Profile from './Routes/Profile'
+import Cart from './Routes/Cart'
+import ProductListing from './Routes/ProductListing'
+import CheckOut from './Routes/CheckOut'
+import AI from './Routes/AI'
+import Track from './Routes/Track'
+import NotFound from './Routes/NotFound'
+import ProductDetails from './Routes/ProductDetails'
+import { QueryClient } from '@tanstack/react-query'
 
 function App() {
+  const queryClient = new QueryClient();
 
   return (
+    <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
@@ -26,10 +29,11 @@ function App() {
           <Route path="products" element={<ProductListing />} />
           <Route path="ai" element={<AI />} />
           <Route path="track" element={<Track />} />
-          <Route path="*" element={<NotFound />} />
         </Route>
+          <Route path="*" element={<NotFound />} />
       </Routes>
-    </BrowserRouter>
+      </BrowserRouter>
+      </QueryClientProvider>
   )
 }
 
