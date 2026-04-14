@@ -9,11 +9,17 @@ html{
 }
 body{
   font-family: "Inter", sans-serif;
-  font-size: 1.3rem;
-  background-color: #121C21;
-  color: #fff;
+  font-size: 1.5rem;
+  background-color: #fff;
+  color: #333;
 }
-.font-brand{
+.brand{
   font-family: "Permanent Marker", cursive;
   letter-spacing: 0.15em;
+}
+/* bg-linear-to-r from-yellow-700 via-green-500 to-emerald-400 bg-clip-text text-transparent */
+.gradient-text{
+  background: linear-gradient(45deg, #ff7e5f, #feb47b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
