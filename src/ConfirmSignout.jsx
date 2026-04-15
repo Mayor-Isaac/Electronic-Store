@@ -1,6 +1,6 @@
 import React from "react";
-import RedBtn from "./Components/RedBtn";
-import GrayBtn from "./Components/GrayBtn";
+import RedBtn from "./ui/RedBtn";
+import GrayBtn from "./ui/GrayBtn";
 import { useNavigate } from "react-router";
 import { supabase } from "./lib/supabaseClient";
 import { toast } from "react-toastify";

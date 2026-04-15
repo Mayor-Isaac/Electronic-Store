@@ -1,13 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router';
-import RouteHeader from '../Components/RouteHeader';
-import BlueButton from '../Components/BlueButton';
-import BlackBtn from '../Components/BlackBtn';
+import BlueButton from '../ui/BlueButton';
+import BlackBtn from '../ui/BlackBtn';
 
 export default function NotFound() {
   return (
     <div className=" flex flex-col gap-5 h-screen py-8 px-6">
-      <RouteHeader title={"Page Not Found"} />
       <h2 className="py-5 font-bold text-center text-[28px]">
         Oops! The page you're looking for doesn't exist.
       </h2>

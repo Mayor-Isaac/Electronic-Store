@@ -2,17 +2,12 @@ import React from 'react'
 import { Route, Routes } from 'react-router'
 import { BrowserRouter } from 'react-router'
 import Layout from './Layout'
-import Home from './Routes/Home'
-import Profile from './Routes/Profile'
-import Cart from './Routes/Cart'
-import ProductListing from './Routes/ProductListing'
-import CheckOut from './Routes/CheckOut'
-import AI from './Routes/AI'
-import Track from './Routes/Track'
 import NotFound from './Routes/NotFound'
-import ProductDetails from './Routes/ProductDetails'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Login from './Login'
+import Inventory from './Routes/Inventory'
+import OrderCart from './Routes/OrderCart'
+import CMS from './Routes/CMS'
 
 function App() {
   const queryClient = new QueryClient();
@@ -25,7 +20,10 @@ function App() {
           <Route index element={<Login />} />
           <Route path='/login' element={<Login />} />
             <Route path='/dashboard' element={<Layout />}>
-              <Route index element={<Home />} />
+              <Route index element={<Inventory />} />
+              <Route path='inventory' element={<Inventory />} />
+              <Route path='orders-cart' element={<OrderCart />} />
+              <Route path='content-management' element={<CMS />} />
               </Route>
           <Route path="*" element={<NotFound />} />
       </Routes>

@@ -1,11 +1,12 @@
 import React from 'react'
 import { Outlet,  useNavigate } from 'react-router'
-import Header from './Components/Header';
+import Header from './ui/Header';
 import { supabase } from './lib/supabaseClient';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import ConfirmSignout from './ConfirmSignout';
 import { toast } from 'react-toastify';
+import TabHeader from './ui/TabHeader';
 
 export default function Layout() {
   const navigate = useNavigate();
@@ -29,7 +30,8 @@ export default function Layout() {
     <div className="relative">
       <Header setShowSignout={setShowSignout} />
       {showOverlay && <ConfirmSignout setShowSignout={setShowSignout} />}
-      <div className="mt-25 p-5 border">
+      <div className="mt-25 p-5 flex flex-col gap-7">
+        <TabHeader />
         <Outlet />
       </div>
       <p className="text-center flex items-center justify-center gap-2">
