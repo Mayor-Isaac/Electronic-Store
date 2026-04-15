@@ -17,8 +17,9 @@ const defaultItem = {
     {
       name: "",
       description: "",
-      cost_price: 0,
-      selling_price: 0,
+      stock_quantity: 0,
+      cost_price: null,
+      selling_price: null,
       category: "",
       supplier: "",
       image: "",
@@ -55,18 +56,23 @@ export default function UploadForm() {
                     return (
                       <div
                         key={i}
-                        className="border-b border-[#eaeaea] items-center grid grid-cols-[45px_1fr_280px_120px_120px_120px_120px_120px_60px]"
+                        className="py-2 items-center grid grid-cols-[45px_1fr_280px_120px_120px_120px_120px_120px_120px_65px]"
                       >
-                        <div className="px-[10px] py-1 border">{i + 1}</div>
+                        {/* S/N */}
+                        <div className="px-[10px] text-center py-1 border border-[#eaeaea]">
+                          {i + 1}
+                        </div>
                         {/* Name Field */}
                         <form.Field name={`item[${i}].name`}>
                           {(subField) => {
                             return (
-                              <div className="px-[10px] py-1 border">
+                              <div className="px-[10px] py-1 border border-[#eaeaea]">
                                 <label className="">
                                   <input
-                                    className='w-full'
+                                    required
+                                    className="w-full focus:outline-none"
                                     value={subField.state.value}
+                                    placeholder="Type product name..."
                                     onChange={(e) =>
                                       subField.handleChange(e.target.value)
                                     }
@@ -82,10 +88,34 @@ export default function UploadForm() {
                         <form.Field key={i} name={`item[${i}].description`}>
                           {(subField) => {
                             return (
-                              <div className="border">
+                              <div className="px-[10px] py-1 border border-[#eaeaea]">
                                 <label className="">
                                   <input
-                                    className="w-full"
+                                    className="w-full focus:outline-none"
+                                    placeholder="Short product description"
+                                    value={subField.state.value}
+                                    onChange={(e) =>
+                                      subField.handleChange(e.target.value)
+                                    }
+                                  />
+                                  <FieldInfo field={subField} />
+                                </label>
+                              </div>
+                            );
+                          }}
+                        </form.Field>
+
+                        {/* Stock Quantity Field */}
+                        <form.Field key={i} name={`item[${i}].stock_quantity`}>
+                          {(subField) => {
+                            return (
+                              <div className="px-[10px] py-1 border border-[#eaeaea]">
+                                <label className="">
+                                  <input
+                                    required
+                                    type="number"
+                                    placeholder="0"
+                                    className="w-full focus:outline-none"
                                     value={subField.state.value}
                                     onChange={(e) =>
                                       subField.handleChange(e.target.value)
@@ -102,10 +132,13 @@ export default function UploadForm() {
                         <form.Field key={i} name={`item[${i}].cost_price`}>
                           {(subField) => {
                             return (
-                              <div className="border">
+                              <div className="px-[10px] py-1 border border-[#eaeaea]">
                                 <label className="">
                                   <input
-                                    className="w-full"
+                                    required
+                                    type="number"
+                                    className="w-full focus:outline-none"
+                                    placeholder="0.00"
                                     value={subField.state.value}
                                     onChange={(e) =>
                                       subField.handleChange(e.target.value)
@@ -122,10 +155,13 @@ export default function UploadForm() {
                         <form.Field key={i} name={`item[${i}].selling_price`}>
                           {(subField) => {
                             return (
-                              <div className="border">
+                              <div className="px-[10px] py-1 border border-[#eaeaea]">
                                 <label className="">
                                   <input
-                                    className="w-full"
+                                    type="number"
+                                    required
+                                    placeholder="0.00"
+                                    className="w-full focus:outline-none"
                                     value={subField.state.value}
                                     onChange={(e) =>
                                       subField.handleChange(e.target.value)
@@ -142,10 +178,11 @@ export default function UploadForm() {
                         <form.Field key={i} name={`item[${i}].category`}>
                           {(subField) => {
                             return (
-                              <div className="border">
+                              <div className="px-[10px] py-1 border border-[#eaeaea]">
                                 <label className="">
                                   <input
-                                    className="w-full"
+                                    className="w-full focus:outline-none"
+                                    placeholder="Product category"
                                     value={subField.state.value}
                                     onChange={(e) =>
                                       subField.handleChange(e.target.value)
@@ -162,10 +199,12 @@ export default function UploadForm() {
                         <form.Field key={i} name={`item[${i}].supplier`}>
                           {(subField) => {
                             return (
-                              <div className="border">
+                              <div className="px-[10px] py-1 border border-[#eaeaea]">
                                 <label className="">
                                   <input
-                                    className="w-full"
+                                    required
+                                    className="w-full focus:outline-none"
+                                    placeholder="Supplier name"
                                     value={subField.state.value}
                                     onChange={(e) =>
                                       subField.handleChange(e.target.value)
@@ -182,10 +221,10 @@ export default function UploadForm() {
                         <form.Field key={i} name={`item[${i}].image`}>
                           {(subField) => {
                             return (
-                              <div className="border">
+                              <div className="px-[10px] py-1 border border-[#eaeaea]">
                                 <label className="">
                                   <input
-                                    className="w-full"
+                                    className="w-full focus:outline-none"
                                     value={subField.state.value}
                                     onChange={(e) =>
                                       subField.handleChange(e.target.value)
@@ -199,30 +238,54 @@ export default function UploadForm() {
                         </form.Field>
 
                         <TrashIcon
-                          className="text-red-500 text-[30px] cursor-pointer hover:text-red-700 transition ease-in-out"
+                          className="text-red-500 text-[30px] mx-auto cursor-pointer hover:text-red-700 transition ease-in-out"
                           onClick={() => field.removeValue(i)}
                         />
                       </div>
                     );
                   })}
-                  <button
-                    onClick={() => field.pushValue({ name: "", description: "", cost_price: 0, selling_price: 0, category: "", supplier: "", image: "" })}
-                    type="button"
-                  >
-                    Add item
-                  </button>
+
+                  <div className="flex items-center w-fit ml-auto m-5 gap-4">
+                    <button
+                      className="bg-blue-500 cursor-pointer text-white py-2 px-4 rounded-[8px] hover:bg-blue-700"
+                      onClick={() =>
+                        field.pushValue({
+                          name: "",
+                          description: "",
+                          stock_quantity: null,
+                          cost_price: null,
+                          selling_price: null,
+                          category: "",
+                          supplier: "",
+                          image: "",
+                        })
+                      }
+                      type="button"
+                    >
+                      Add item
+                    </button>
+
+                    <form.Subscribe
+                      selector={(state) => [
+                        state.canSubmit,
+                        state.isSubmitting,
+                      ]}
+                      children={([canSubmit, isSubmitting]) => (
+                        <button
+                          type="submit"
+                          className="bg-green-500 cursor-pointer text-white py-2 px-4 rounded-[8px] hover:bg-green-700"
+                          disabled={!canSubmit}
+                        >
+                          {isSubmitting ? "..." : "Submit"}
+                        </button>
+                      )}
+                    />
+                  </div>
                 </div>
               );
             }}
           </form.Field>
-          <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isSubmitting]}
-            children={([canSubmit, isSubmitting]) => (
-              <button type="submit" disabled={!canSubmit}>
-                {isSubmitting ? "..." : "Submit"}
-              </button>
-            )}
-          />
+         
         </form>
       </div>
     );

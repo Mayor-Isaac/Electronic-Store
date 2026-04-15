@@ -1,7 +1,8 @@
 import React from 'react'
 import { useState } from 'react';
-import Sales from '../component/Inventory/Sales';
-import Upload from '../component/Inventory/Upload';
+import Sales from '../component/Inventory/Sales/Sales';
+import Upload from "../component/Inventory/Upload/Upload";
+import Supplier from '../component/Inventory/Supplier/Supplier';
 
 const tabs = ["Sales", "Upload", "Reports", "Products", "Suppliers"];
 export default function Inventory() {
@@ -23,6 +24,9 @@ export default function Inventory() {
               </div>
             {activeTab === "Sales" && <Sales />}  
             {activeTab === "Upload" && <Upload />}  
+            {/* {activeTab === "Reports" && <Reports />}  
+            {activeTab === "Products" && <Products />}   */}
+            {activeTab === "Suppliers" && <Supplier />}  
         </div>
       );
 }

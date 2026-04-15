@@ -27,10 +27,10 @@ export default function Layout() {
   }, [navigate]);
   
   return (
-    <div className="relative">
+    <div className="relative min-h-screen flex flex-col">
       <Header setShowSignout={setShowSignout} />
       {showOverlay && <ConfirmSignout setShowSignout={setShowSignout} />}
-      <div className="mt-25 p-5 flex flex-col gap-7">
+      <div className="mt-25 p-5 flex flex-col flex-1 gap-7">
         <TabHeader />
         <Outlet />
       </div>
