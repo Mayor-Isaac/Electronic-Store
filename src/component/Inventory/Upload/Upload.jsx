@@ -5,7 +5,7 @@ export default function Upload() {
   return (
     <div>
       <h3 className="text-3xl font-medium my-4 ">Upload Inventory Data</h3>
-      <div className="grid grid-cols-[45px_1fr_280px_120px_120px_120px_120px_120px_120px_65px]  items-center  bg-[#E8EFF9]  rounded-tr-lg rounded-tl-lg">
+      <div className="grid grid-cols-[45px_1fr_280px_120px_120px_120px_120px_190px_120px_65px]  items-center  bg-[#E8EFF9]  rounded-tr-lg rounded-tl-lg">
         {[
           "S/N",
           "Name",
@@ -19,10 +19,7 @@ export default function Upload() {
           "Action",
         ].map((item, index) => {
           return (
-            <div
-              key={index}
-              className="p-[10px] text-[14px] font-bold"
-            >
+            <div key={index} className="p-[10px] text-[14px] font-bold">
               {item}
             </div>
           );

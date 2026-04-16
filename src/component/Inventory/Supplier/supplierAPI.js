@@ -1,21 +1,27 @@
 import { supabase } from "../../../lib/supabaseClient";
-export const getAllSuppliers = async (sortOption) => {
-  const isAscending = sortOption === "created_at" ? false : true;
+export const getAllSuppliers = async (sortOption = "created_at") => {
+  const safeSortOption = sortOption || "created_at";
+  const isAscending = safeSortOption === "created_at" ? false : true;
 
-  console.log("Fetching suppliers sorted by:", sortOption, "Ascending:", isAscending);
   const { data, error } = await supabase
     .from("suppliers")
     .select("*")
-    .order(sortOption, { ascending: isAscending });
+    .order(safeSortOption, { ascending: isAscending });
   if (error) throw error;
   return data;
 };
 
 export const addSupplier = async (newSupplier) => {
-  // console.log("Adding supplier:", newSupplier);
   const { data, error } = await supabase
     .from("suppliers")
     .insert([newSupplier]).select();
+  if (error) throw error;
+  return data;
+};
+
+export const updateSupplier = async (updatedSupplier) => {
+  const { id, ...supplierData } = updatedSupplier;
+  const { data, error } = await supabase.from("suppliers").update(supplierData).eq("id", id).select();
   if (error) throw error;
   return data;
 };

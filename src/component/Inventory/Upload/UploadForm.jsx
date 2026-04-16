@@ -1,292 +1,210 @@
 import { TrashIcon } from '@phosphor-icons/react';
-import { useForm } from '@tanstack/react-form'
+import React from 'react'
+import { useState } from 'react'
+import useAlter from '../../../hooks/useAlter';
+import useFetch from '../../../hooks/useFetch';
+import { createProduct, uploadProductImage } from './uploadAPI';
+import { toast } from 'react-toastify';
+import { getAllSuppliers } from '../Supplier/supplierAPI';
 
-function FieldInfo({ field }) {
-  return (
-    <>
-      {field.state.meta.isTouched && !field.state.meta.isValid ? (
-        <em>{field.state.meta.errors.join(',')}</em>
-      ) : null}
-      {field.state.meta.isValidating ? 'Validating...' : null}
-    </>
-  )
-}
-
-const defaultItem = {
-  item: [
-    {
-      name: "",
-      description: "",
-      stock_quantity: 0,
-      cost_price: null,
-      selling_price: null,
-      category: "",
-      supplier: "",
-      image: "",
-    },
-  ],
+const emptyProduct = {
+  name: "",
+  description: "",
+  stock_quantity: null,
+  cost_price: null,
+  selling_price: null,
+  category: "",
+  supplier_id: "",
+  image_name: "",
+  image_file: null,
 };
 
 export default function UploadForm() {
+  const [products, setProducts] = useState([{ ...emptyProduct }]);
 
-   const form = useForm({
-     defaultValues: defaultItem,
-     onSubmit({ value }) {
-       alert(JSON.stringify(value));
-     },
-   });
+   const { data: suppliers, isPending, error } = useFetch({
+      queryFn: () => getAllSuppliers("created_at"),
+      key: "suppliers",
+    });
 
+  // Mutation for creating the product
+  const productMutation = useAlter({
+    mutationFn: createProduct,
+    key: "products",
+    onSuccessCallback: () => toast.success("Product uploaded successfully!"),
+  });
 
-    return (
-      <div>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            form.handleSubmit();
-          }}
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      for (const product of products) {
+        let image_url = "";
+
+        if (product.image_file) {
+          image_url = await uploadProductImage(product.image_file);
+        }
+
+        const { image_file, image_name, ...productData } = product;
+        await productMutation.mutateAsync({ ...productData, image_url });
+      }
+
+      setProducts([{ ...emptyProduct }]);
+    } catch (err) {
+      toast.error("Upload failed: " + err.message);
+    }
+  };
+
+  console.log("Products to upload===>", products);
+  console.log("Suppliers data===>", suppliers);
+
+  return (
+    <form onSubmit={(e) => handleSubmit(e)}>
+      {products.map((product, i) => (
+        <div
+          key={i}
+          className="grid grid-cols-[45px_1fr_280px_120px_120px_120px_120px_190px_120px_65px] items-center border-b border-b-[#eaeaea] "
         >
-          <form.Field name="item" mode="array">
-            {(field) => {
-              const item = field.state.value ?? [];
-
-              return (
-                <div className="">
-                  {item.map((_, i) => {
-                    return (
-                      <div
-                        key={i}
-                        className="py-2 items-center grid grid-cols-[45px_1fr_280px_120px_120px_120px_120px_120px_120px_65px]"
-                      >
-                        {/* S/N */}
-                        <div className="px-[10px] text-center py-1 border border-[#eaeaea]">
-                          {i + 1}
-                        </div>
-                        {/* Name Field */}
-                        <form.Field name={`item[${i}].name`}>
-                          {(subField) => {
-                            return (
-                              <div className="px-[10px] py-1 border border-[#eaeaea]">
-                                <label className="">
-                                  <input
-                                    required
-                                    className="w-full focus:outline-none"
-                                    value={subField.state.value}
-                                    placeholder="Type product name..."
-                                    onChange={(e) =>
-                                      subField.handleChange(e.target.value)
-                                    }
-                                  />
-                                  <FieldInfo field={subField} />
-                                </label>
-                              </div>
-                            );
-                          }}
-                        </form.Field>
-
-                        {/* Description Field */}
-                        <form.Field key={i} name={`item[${i}].description`}>
-                          {(subField) => {
-                            return (
-                              <div className="px-[10px] py-1 border border-[#eaeaea]">
-                                <label className="">
-                                  <input
-                                    className="w-full focus:outline-none"
-                                    placeholder="Short product description"
-                                    value={subField.state.value}
-                                    onChange={(e) =>
-                                      subField.handleChange(e.target.value)
-                                    }
-                                  />
-                                  <FieldInfo field={subField} />
-                                </label>
-                              </div>
-                            );
-                          }}
-                        </form.Field>
-
-                        {/* Stock Quantity Field */}
-                        <form.Field key={i} name={`item[${i}].stock_quantity`}>
-                          {(subField) => {
-                            return (
-                              <div className="px-[10px] py-1 border border-[#eaeaea]">
-                                <label className="">
-                                  <input
-                                    required
-                                    type="number"
-                                    placeholder="0"
-                                    className="w-full focus:outline-none"
-                                    value={subField.state.value}
-                                    onChange={(e) =>
-                                      subField.handleChange(e.target.value)
-                                    }
-                                  />
-                                  <FieldInfo field={subField} />
-                                </label>
-                              </div>
-                            );
-                          }}
-                        </form.Field>
-
-                        {/* Cost Price Field */}
-                        <form.Field key={i} name={`item[${i}].cost_price`}>
-                          {(subField) => {
-                            return (
-                              <div className="px-[10px] py-1 border border-[#eaeaea]">
-                                <label className="">
-                                  <input
-                                    required
-                                    type="number"
-                                    className="w-full focus:outline-none"
-                                    placeholder="0.00"
-                                    value={subField.state.value}
-                                    onChange={(e) =>
-                                      subField.handleChange(e.target.value)
-                                    }
-                                  />
-                                  <FieldInfo field={subField} />
-                                </label>
-                              </div>
-                            );
-                          }}
-                        </form.Field>
-
-                        {/* Selling Price Field */}
-                        <form.Field key={i} name={`item[${i}].selling_price`}>
-                          {(subField) => {
-                            return (
-                              <div className="px-[10px] py-1 border border-[#eaeaea]">
-                                <label className="">
-                                  <input
-                                    type="number"
-                                    required
-                                    placeholder="0.00"
-                                    className="w-full focus:outline-none"
-                                    value={subField.state.value}
-                                    onChange={(e) =>
-                                      subField.handleChange(e.target.value)
-                                    }
-                                  />
-                                  <FieldInfo field={subField} />
-                                </label>
-                              </div>
-                            );
-                          }}
-                        </form.Field>
-
-                        {/* Category Field */}
-                        <form.Field key={i} name={`item[${i}].category`}>
-                          {(subField) => {
-                            return (
-                              <div className="px-[10px] py-1 border border-[#eaeaea]">
-                                <label className="">
-                                  <input
-                                    className="w-full focus:outline-none"
-                                    placeholder="Product category"
-                                    value={subField.state.value}
-                                    onChange={(e) =>
-                                      subField.handleChange(e.target.value)
-                                    }
-                                  />
-                                  <FieldInfo field={subField} />
-                                </label>
-                              </div>
-                            );
-                          }}
-                        </form.Field>
-
-                        {/* Supplier Field */}
-                        <form.Field key={i} name={`item[${i}].supplier`}>
-                          {(subField) => {
-                            return (
-                              <div className="px-[10px] py-1 border border-[#eaeaea]">
-                                <label className="">
-                                  <input
-                                    required
-                                    className="w-full focus:outline-none"
-                                    placeholder="Supplier name"
-                                    value={subField.state.value}
-                                    onChange={(e) =>
-                                      subField.handleChange(e.target.value)
-                                    }
-                                  />
-                                  <FieldInfo field={subField} />
-                                </label>
-                              </div>
-                            );
-                          }}
-                        </form.Field>
-
-                        {/* Image Field */}
-                        <form.Field key={i} name={`item[${i}].image`}>
-                          {(subField) => {
-                            return (
-                              <div className="px-[10px] py-1 border border-[#eaeaea]">
-                                <label className="">
-                                  <input
-                                    className="w-full focus:outline-none"
-                                    value={subField.state.value}
-                                    onChange={(e) =>
-                                      subField.handleChange(e.target.value)
-                                    }
-                                  />
-                                  <FieldInfo field={subField} />
-                                </label>
-                              </div>
-                            );
-                          }}
-                        </form.Field>
-
-                        <TrashIcon
-                          className="text-red-500 text-[30px] mx-auto cursor-pointer hover:text-red-700 transition ease-in-out"
-                          onClick={() => field.removeValue(i)}
-                        />
-                      </div>
-                    );
-                  })}
-
-                  <div className="flex items-center w-fit ml-auto m-5 gap-4">
-                    <button
-                      className="bg-blue-500 cursor-pointer text-white py-2 px-4 rounded-[8px] hover:bg-blue-700"
-                      onClick={() =>
-                        field.pushValue({
-                          name: "",
-                          description: "",
-                          stock_quantity: null,
-                          cost_price: null,
-                          selling_price: null,
-                          category: "",
-                          supplier: "",
-                          image: "",
-                        })
-                      }
-                      type="button"
-                    >
-                      Add item
-                    </button>
-
-                    <form.Subscribe
-                      selector={(state) => [
-                        state.canSubmit,
-                        state.isSubmitting,
-                      ]}
-                      children={([canSubmit, isSubmitting]) => (
-                        <button
-                          type="submit"
-                          className="bg-green-500 cursor-pointer text-white py-2 px-4 rounded-[8px] hover:bg-green-700"
-                          disabled={!canSubmit}
-                        >
-                          {isSubmitting ? "..." : "Submit"}
-                        </button>
-                      )}
-                    />
-                  </div>
-                </div>
-              );
+          <div className="p-[10px] text-[14px] text-center border-r border-r-[#eaeaea] focus:outline-none">
+            {i + 1}
+          </div>
+          <input
+            type="text"
+            placeholder="Type product name..."
+            required
+            value={products[i].name}
+            onChange={(e) => {
+              const newProducts = [...products];
+              newProducts[i].name = e.target.value;
+              setProducts(newProducts);
             }}
-          </form.Field>
-         
-        </form>
+            className="p-[10px] text-[14px] w-full border-r border-r-[#eaeaea] focus:outline-none"
+          />
+          <input
+            type="text"
+            placeholder="Type short description..."
+            value={products[i].description}
+            onChange={(e) => {
+              const newProducts = [...products];
+              newProducts[i].description = e.target.value;
+              setProducts(newProducts);
+            }}
+            className="p-[10px] text-[14px] w-full border-r border-r-[#eaeaea] focus:outline-none"
+          />
+          <input
+            type="number"
+            min={0}
+            placeholder="0"
+            value={products[i].stock_quantity}
+            required
+            onChange={(e) => {
+              const newProducts = [...products];
+              newProducts[i].stock_quantity = e.target.value;
+              setProducts(newProducts);
+            }}
+            className="p-[10px] text-[14px]  border-r border-r-[#eaeaea] focus:outline-none"
+          />
+          <input
+            type="number"
+            min={0}
+            step="0.01"
+            placeholder="0.00"
+            required
+            value={products[i].cost_price}
+            onChange={(e) => {
+              const newProducts = [...products];
+              newProducts[i].cost_price = e.target.value;
+              setProducts(newProducts);
+            }}
+            className="p-[10px] text-[14px]  border-r border-r-[#eaeaea] focus:outline-none"
+          />
+          <input
+            type="number"
+            min={0}
+            step="0.01"
+            placeholder="0.00"
+            value={products[i].selling_price}
+            required
+            onChange={(e) => {
+              const newProducts = [...products];
+              newProducts[i].selling_price = e.target.value;
+              setProducts(newProducts);
+            }}
+            className="p-[10px] text-[14px]  border-r border-r-[#eaeaea] focus:outline-none"
+          />
+          <input
+            type="text"
+            placeholder="Category"
+            value={products[i].category}
+            onChange={(e) => {
+              const newProducts = [...products];
+              newProducts[i].category = e.target.value;
+              setProducts(newProducts);
+            }}
+            className="p-[10px] text-[14px]  border-r border-r-[#eaeaea] focus:outline-none"
+          />
+          <input
+            type="text"
+            placeholder="Type supplier name"
+            value={products[i].supplier}
+            required
+            onChange={(e) => {
+              const newProducts = [...products];
+              newProducts[i].supplier = e.target.value;
+              setProducts(newProducts);
+            }}
+            className="p-[10px] text-[14px] truncate border-r border-r-[#eaeaea] focus:outline-none"
+          />
+          <div className="p-[10px] text-[14px] border-r border-r-[#eaeaea]">
+            <input
+              id={`product-image-${i}`}
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                const newProducts = [...products];
+                newProducts[i].image_name = file ? file.name : "";
+                newProducts[i].image_file = file || null;
+                setProducts(newProducts);
+              }}
+              className="hidden"
+            />
+            <label
+              htmlFor={`product-image-${i}`}
+              className="block w-full truncate cursor-pointer"
+              title={products[i].image_name || "Upload Image"}
+            >
+              {products[i].image_name || "Upload Image"}
+            </label>
+          </div>
+
+          <div
+            className="flex items-center justify-center cursor-pointer"
+            onClick={() => {
+              const newProducts = products.filter((_, index) => index !== i);
+              setProducts(newProducts);
+            }}
+          >
+            <TrashIcon className="text-red-600 hover:text-red-500 transition text-[20px] hover:text-[22px] ease-in-out" />
+          </div>
+        </div>
+      ))}
+
+      <div className="flex items-center justify-end m-5 gap-5">
+        <button
+          type="button"
+          onClick={() => setProducts([...products, { ...emptyProduct }])}
+          className="bg-blue-500 cursor-pointer w-[100px] text-white py-2 px-4 rounded-[8px] hover:bg-blue-700"
+        >
+          Add Row
+        </button>
+        <button
+          type="submit"
+          className="bg-green-500 cursor-pointer w-[100px] text-white py-2 px-4 rounded-[8px] hover:bg-green-700"
+        >
+          Submit
+        </button>
       </div>
-    );
+    </form>
+  );
 }

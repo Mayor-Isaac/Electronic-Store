@@ -2,6 +2,7 @@ import React from 'react'
 import Overlay from '../../../ui/Overlay'
 import BlueButton from '../../../ui/BlueButton';
 import EmptyTable from '../../../ui/EmptyTable';
+import Spinner from '../../../ui/Spinner';
 import SupplierRow from './SupplierRow';
 import AddSupplierForm from './AddSupplierForm';
 import useFetch from '../../../hooks/useFetch';
@@ -19,9 +20,8 @@ export default function Supplier() {
     queryFn: () => getAllSuppliers(sortOption),
     key: "suppliers",
   });
-
- if(isPending) return <p>Loading...</p>
- if(error) return toast.error("Error fetching suppliers: " + error.message)
+  if (error) return toast.error("Error fetching suppliers: " + error.message)
+  
 
   return (
     <div className="p-5 flex flex-col gap-5">
@@ -46,7 +46,11 @@ export default function Supplier() {
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-2">
             <h3 className="">Sort By: </h3>
-            <select value={sortOption} onChange={(e) => setSortOption(e.target.value)} className="border border-[#eaeaea] rounded-[8px] py-2 px-3 focus:outline-none">
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              className="border border-[#eaeaea] rounded-[8px] py-2 px-3 focus:outline-none"
+            >
               <option value="name">Name</option>
               <option value="created_at">Date Added</option>
             </select>
@@ -60,7 +64,7 @@ export default function Supplier() {
       </header>
       <p>
         Total number of suppliers:{" "}
-        <span className="font-medium">{suppliers.length}</span>
+        <span className="font-medium">{suppliers && suppliers.length}</span>
       </p>
 
       {/* Table Content */}
@@ -83,28 +87,29 @@ export default function Supplier() {
         </div>
 
         {isPending ? (
-          <p>Loading...</p>
+          <Spinner />
         ) : suppliers.length === 0 ? (
           <EmptyTable
             info="No suppliers found"
             instruction="Add suppliers to get started"
           />
         ) : (
-          suppliers.sort((a, b) => {
-            if (sortOption === "name") {
-              return a.name.localeCompare(b.name);
-            }
-            if (sortOption === "created_at") {
-              return new Date(b.created_at) - new Date(a.created_at);
-            }
-            return 0;
-          })
-          .filter((supplier) =>
-            supplier.name.toLowerCase().includes(searchTerm.toLowerCase()),
-          )
-          .map((supplier) => (
-            <SupplierRow key={supplier.id} data={supplier} />
-          ))
+          suppliers
+            .sort((a, b) => {
+              if (sortOption === "name") {
+                return a.name.localeCompare(b.name);
+              }
+              if (sortOption === "created_at") {
+                return new Date(b.created_at) - new Date(a.created_at);
+              }
+              return 0;
+            })
+            .filter((supplier) =>
+              supplier.name.toLowerCase().includes(searchTerm.toLowerCase()),
+            )
+            .map((supplier) => (
+              <SupplierRow key={supplier.id} data={supplier} />
+            ))
         )}
       </div>
       {showForm && (
