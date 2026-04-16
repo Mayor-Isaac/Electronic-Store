@@ -4,10 +4,22 @@ import BlueButton from '../../../ui/BlueButton';
 import EmptyTable from '../../../ui/EmptyTable';
 import SupplierRow from './SupplierRow';
 import AddSupplierForm from './AddSupplierForm';
+import useFetch from '../../../hooks/useFetch';
+import { getAllSuppliers } from './supplierAPI';
+import { toast } from 'react-toastify';
 
 export default function Supplier() {
   const [showForm, setShowForm] = React.useState(false);
-  const suppliers = []
+  
+  // Fetch suppliers data using custom hook
+  const { data: suppliers, isPending, error } = useFetch({
+    queryFn: getAllSuppliers,
+    key: "suppliers",
+  });
+
+ if(isPending) return <p>Loading...</p>
+ if(error) return toast.error("Error fetching suppliers: " + error.message)
+
   return (
     <div className="p-5 flex flex-col gap-5">
       <header className="flex items-center justify-between">
@@ -31,7 +43,7 @@ export default function Supplier() {
 
       {/* Table Content */}
       <div className="table-container">
-        <div className="grid grid-cols-[1fr_1fr_1fr_1fr_220px_90px]  items-center  bg-[#E8EFF9]  rounded-tr-lg rounded-tl-lg">
+        <div className="grid grid-cols-[1fr_150px_1fr_1fr_220px_75px]  items-center  bg-[#E8EFF9]  rounded-tr-lg rounded-tl-lg">
           {[
             "Name",
             "Phone number",
@@ -47,8 +59,8 @@ export default function Supplier() {
             );
           })}
         </div>
-
-        {suppliers.length === 0 ? <EmptyTable info="No suppliers found" instruction="Add suppliers to get started" /> : <SupplierRow />}
+        
+        {isPending ? <p>Loading...</p> : suppliers.length === 0 ? <EmptyTable info="No suppliers found" instruction="Add suppliers to get started" /> : suppliers.map((supplier) => <SupplierRow key={supplier.id} data={supplier} />)}
       </div>
       {showForm && <Overlay><AddSupplierForm closeForm={() => setShowForm(false)} /></Overlay>}
     </div>

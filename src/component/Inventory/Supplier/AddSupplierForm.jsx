@@ -1,6 +1,9 @@
 import { FilePlusIcon, XIcon } from '@phosphor-icons/react'
 import React from 'react'
 import BlueButton from '../../../ui/BlueButton';
+import useAlter from '../../../hooks/useAlter';
+import { addSupplier } from './supplierAPI';
+import { toast } from 'react-toastify';
 
 export default function AddSupplierForm({ closeForm }) {
     const [userForm, setUserForm] = React.useState({
@@ -10,10 +13,19 @@ export default function AddSupplierForm({ closeForm }) {
         contact_person: "",
         address: "",
     });
+  
+  const createSupplier = useAlter({
+    mutationFn: addSupplier,
+    key: "suppliers",
+    onSuccessCallback: () => {
+      closeForm();
+      toast.success(`${userForm.name} added successfully!`);
+    }
+  });
 
     const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log(userForm);
+      e.preventDefault();
+      createSupplier.mutate({...userForm});
     }
 
 
@@ -35,9 +47,9 @@ export default function AddSupplierForm({ closeForm }) {
 
 const Form = function ({ userForm, setUserForm, handleSubmit }) {
  return (
-   <form onSubmit={(e) => handleSubmit(e)} className="p-5 text-[18px]">
-     <div className="mb-4">
-       <label className="block font-medium mb-2" htmlFor="name">
+   <form onSubmit={(e) => handleSubmit(e)} className="p-5 text-[18px] flex flex-col gap-6">
+     <div className="">
+       <label className="block font-medium mb-1 text-[15px]" htmlFor="name">
          Name <span className="ml-1  text-red-500">*</span>
        </label>
        <input
@@ -46,11 +58,11 @@ const Form = function ({ userForm, setUserForm, handleSubmit }) {
          id="name"
          value={userForm.name}
          onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
-         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+         className="border rounded-[8px] w-full p-3 focus:outline-none"
        />
      </div>
-     <div className="mb-4">
-       <label className="block font-medium mb-2" htmlFor="email">
+     <div className="">
+       <label className="block font-medium mb-1 text-[15px]" htmlFor="email">
          Email
        </label>
        <input
@@ -58,11 +70,11 @@ const Form = function ({ userForm, setUserForm, handleSubmit }) {
          id="email"
          value={userForm.email}
          onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
-         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+         className="border rounded-[8px] w-full p-3 focus:outline-none"
        />
      </div>
-     <div className="mb-4">
-       <label className="block font-medium mb-2" htmlFor="phone_num">
+     <div className="">
+       <label className="block font-medium mb-1 text-[15px]" htmlFor="phone_num">
          Phone Number <span className="ml-1  text-red-500">*</span>
        </label>
        <input
@@ -73,11 +85,11 @@ const Form = function ({ userForm, setUserForm, handleSubmit }) {
          onChange={(e) =>
            setUserForm({ ...userForm, phone_num: e.target.value })
          }
-         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+         className="border rounded-[8px] w-full p-3 focus:outline-none"
        />
      </div>
-     <div className="mb-4">
-       <label className="block font-medium mb-2" htmlFor="contact_person">
+     <div className="">
+       <label className="block font-medium mb-1 text-[15px]" htmlFor="contact_person">
          Contact Person
        </label>
        <input
@@ -87,11 +99,11 @@ const Form = function ({ userForm, setUserForm, handleSubmit }) {
          onChange={(e) =>
            setUserForm({ ...userForm, contact_person: e.target.value })
          }
-         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+         className="border rounded-[8px] w-full p-3 focus:outline-none"
        />
      </div>
-     <div className="mb-4">
-       <label className="block font-medium mb-2" htmlFor="address">
+     <div className="">
+       <label className="block font-medium mb-1 text-[15px]" htmlFor="address">
          Address
        </label>
        <input
@@ -99,18 +111,12 @@ const Form = function ({ userForm, setUserForm, handleSubmit }) {
          id="address"
          value={userForm.address}
          onChange={(e) => setUserForm({ ...userForm, address: e.target.value })}
-         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+         className="border rounded-[8px] w-full p-3 focus:outline-none"
        />
      </div>
 
      <div className="flex items-center justify-end gap-3">
-       <BlueButton text={"Add Supplier"} onClick={handleSubmit} />
-       {/* <button
-        type="submit"
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-      >
-        Add Supplier
-      </button> */}
+       <BlueButton type='submit' text={"Add Supplier"} />
      </div>
    </form>
  );
