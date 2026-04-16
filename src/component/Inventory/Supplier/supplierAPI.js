@@ -1,9 +1,12 @@
 import { supabase } from "../../../lib/supabaseClient";
-export const getAllSuppliers = async () => {
+export const getAllSuppliers = async (sortOption) => {
+  const isAscending = sortOption === "created_at" ? false : true;
+
+  console.log("Fetching suppliers sorted by:", sortOption, "Ascending:", isAscending);
   const { data, error } = await supabase
     .from("suppliers")
     .select("*")
-    // .order("created_at", { ascending: false });
+    .order(sortOption, { ascending: isAscending });
   if (error) throw error;
   return data;
 };
