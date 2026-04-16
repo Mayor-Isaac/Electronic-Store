@@ -1,12 +1,20 @@
 import { supabase } from "../../../lib/supabaseClient";
 export const getAllProducts = async (sortOption = "created_at") => {
-  const safeSortOption = sortOption || "created_at";
-  const isAscending = safeSortOption === "created_at" ? false : true;
+  const safeSortOption = sortOption || "created_at_desc";
+
+  const sortMap = {
+    name: { column: "name", ascending: true },
+    created_at_desc: { column: "created_at", ascending: false },
+    quantity_left_asc: { column: "quantity_left", ascending: true },
+    quantity_left_desc: { column: "quantity_left", ascending: false },
+  };
+
+  const selectedSort = sortMap[safeSortOption] || sortMap.created_at_desc;
 
   const { data, error } = await supabase
     .from("products")
     .select("*")
-    .order(safeSortOption, { ascending: isAscending });
+    .order(selectedSort.column, { ascending: selectedSort.ascending });
   if (error) throw error;
   return data;
 };

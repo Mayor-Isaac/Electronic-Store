@@ -12,7 +12,7 @@ import { getAllProducts } from './supplierAPI';
 export default function Products() {
   const [showForm, setShowForm] = React.useState(false);
   const [searchTerm, setSearchTerm] = React.useState("");
-  const [sortOption, setSortOption] = React.useState("created_at");
+  const [sortOption, setSortOption] = React.useState("created_at_desc");
 
   // Fetch products data using custom hook
   const {
@@ -92,7 +92,9 @@ export default function Products() {
               className="border border-[#eaeaea] rounded-[8px] py-2 px-3 focus:outline-none"
             >
               <option value="name">Name</option>
-              <option value="created_at">Date Added</option>
+              <option value="created_at_desc">Date Added</option>
+              <option value="quantity_left_asc">Quantity Left (asc)</option>
+              <option value="quantity_left_desc">Quantity Left (desc)</option>
             </select>
           </div>
           {/* <BlueButton
@@ -125,7 +127,7 @@ export default function Products() {
             return (
               <div
                 key={index}
-                className="p-[10px] border text-[14px] font-bold"
+                className="p-[10px] text-[14px] font-bold"
               >
                 {item}
               </div>
@@ -138,7 +140,7 @@ export default function Products() {
         ) : products.length === 0 ? (
           <EmptyTable
             info="No products found"
-            instruction="Add products to get started"
+            instruction="Upload products to get started"
           />
         ) : (
           products
@@ -146,17 +148,21 @@ export default function Products() {
               if (sortOption === "name") {
                 return a.name.localeCompare(b.name);
               }
-              if (sortOption === "created_at") {
+              if (sortOption === "created_at_desc") {
                 return new Date(b.created_at) - new Date(a.created_at);
+              }
+              if (sortOption === "quantity_left_asc") {
+                return a.quantity_left - b.quantity_left;
+              }
+              if (sortOption === "quantity_left_desc") {
+                return b.quantity_left - a.quantity_left;
               }
               return 0;
             })
             .filter((products) =>
               products.name.toLowerCase().includes(searchTerm.toLowerCase()),
             )
-            .map((products) => (
-              <ProductRow key={products.id} data={products} />
-            ))
+            .map((products) => <ProductRow key={products.id} data={products} />)
         )}
       </div>
       {/* {showForm && (

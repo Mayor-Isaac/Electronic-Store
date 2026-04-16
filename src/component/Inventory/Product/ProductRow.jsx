@@ -7,6 +7,8 @@ import useAlter from '../../../hooks/useAlter';
 import { deleteSupplier } from './supplierAPI';
 import AddSupplierForm from './AddSupplierForm';
 import formatCurrency from '../../../utils/formatCurrency';
+import useFetch from '../../../hooks/useFetch';
+import { getAllSuppliers } from '../Supplier/supplierAPI';
 
 export default function ProductRow({ data }) {
   const {
@@ -19,6 +21,14 @@ export default function ProductRow({ data }) {
     cost_price: costPrice,
     category,
   } = data;
+
+    const { data: suppliers, isPending, error } = useFetch({
+        queryFn: () => getAllSuppliers("created_at"),
+        key: "suppliers",
+    });
+  
+  const supplierName = suppliers?.find((sup) => sup.id === supplier_id)?.name || "Unknown Supplier";
+  
   // const [showMenu, setShowMenu] = React.useState(false);
   // const [showConfirmDelete, setShowConfirmDelete] = React.useState(false);
   // const [showEditForm, setShowEditForm] = React.useState(false);
@@ -41,26 +51,31 @@ export default function ProductRow({ data }) {
 
   return (
     <div className="grid grid-cols-[80px_250px_120px_1fr_200px_130px_130px_130px_130px_75px] items-center border-b border-b-[#eaeaea]">
-      <div className="p-[10px] text-[14px] ">
-        <img src={data.img_url} alt={data.name} />
+      <div className="p-[5px] text-[14px]">
+        <img
+          src={data.img_url}
+          alt={data.name}
+          loading="lazy"
+          className="w-full h-[50px]"
+          decoding="async"
+        />
       </div>
       <div className="p-[10px] text-[14px] capitalize">{name}</div>
       <div className="p-[10px] text-[14px] truncate">{description || "-"}</div>
       <div className="p-[10px] text-[14px] capitalize">{category || "-"}</div>
-      <div className="p-[10px] text-[14px] truncate">{supplier_id || "-"}</div>
-      <div className="p-[10px] text-[14px] font-bold">{formatCurrency(costPrice)}</div>
-      <div className="p-[10px] text-[14px] font-bold">{formatCurrency(sellingPrice)}</div>
+      <div className="p-[10px] text-[14px] truncate">{supplierName}</div>
+      <div className="p-[10px] text-[14px] font-bold">
+        {formatCurrency(costPrice)}
+      </div>
+      <div className="p-[10px] text-[14px] font-bold">
+        {formatCurrency(sellingPrice)}
+      </div>
       <div className={`p-[10px] text-[14px] font-bold`}>{stockQuantity}</div>
       <div
-        className={`p-[10px] text-[14px] font-bold ${quantityLeft > 50 ? "text-green-600" : quantityLeft < 50 && quantityLeft > 10 ? "text-yellow-600" : "text-green-600"}`}
+        className={`p-[10px] text-[14px] font-bold ${quantityLeft > 50 ? "text-green-600" : quantityLeft < 50 && quantityLeft > 10 ? "text-yellow-600" : "text-red-600"}`}
       >
         {quantityLeft}
       </div>
-      {/* 
-      <div className="p-[10px] text-[14px] lowercase">{email || "-"}</div>
-      <div className="p-[10px] text-[14px] capitalize">
-        {contactPerson || "-"}
-      </div> */}
 
       {/* <div className="relative p-[10px] text-[14px] flex items-center justify-center">
         <button

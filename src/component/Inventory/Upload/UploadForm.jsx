@@ -10,9 +10,9 @@ import { getAllSuppliers } from '../Supplier/supplierAPI';
 const emptyProduct = {
   name: "",
   description: "",
-  stock_quantity: null,
-  cost_price: null,
-  selling_price: null,
+  stock_quantity: "",
+  cost_price: "",
+  selling_price: "",
   category: "",
   supplier_id: "",
   image_name: "",
@@ -21,6 +21,7 @@ const emptyProduct = {
 
 export default function UploadForm() {
   const [products, setProducts] = useState([{ ...emptyProduct }]);
+  const [newCategory, setNewCategory] = useState("");
 
    const { data: suppliers, isPending, error } = useFetch({
       queryFn: () => getAllSuppliers("created_at"),
@@ -31,7 +32,10 @@ export default function UploadForm() {
   const productMutation = useAlter({
     mutationFn: createProduct,
     key: "products",
-    onSuccessCallback: () => toast.success("Product uploaded successfully!"),
+    onSuccessCallback: () => {
+      setProducts([{ ...emptyProduct }]);
+      toast.success("Product uploaded successfully!");
+    },
   });
 
   const handleSubmit = async (e) => {
@@ -39,14 +43,21 @@ export default function UploadForm() {
 
     try {
       for (const product of products) {
-        let image_url = "";
+        let img_url = "";
 
         if (product.image_file) {
-          image_url = await uploadProductImage(product.image_file);
+          img_url = await uploadProductImage(product.image_file);
         }
 
         const { image_file, image_name, ...productData } = product;
-        await productMutation.mutateAsync({ ...productData, image_url });
+        await productMutation.mutateAsync({
+          ...productData,
+          stock_quantity: Number(productData.stock_quantity),
+          cost_price: Number(productData.cost_price),
+          selling_price: Number(productData.selling_price),
+          img_url,
+          quantity_left: Number(productData.stock_quantity),
+        });
       }
 
       setProducts([{ ...emptyProduct }]);
@@ -54,10 +65,7 @@ export default function UploadForm() {
       toast.error("Upload failed: " + err.message);
     }
   };
-
-  console.log("Products to upload===>", products);
-  console.log("Suppliers data===>", suppliers);
-
+  
   return (
     <form onSubmit={(e) => handleSubmit(e)}>
       {products.map((product, i) => (
@@ -143,18 +151,29 @@ export default function UploadForm() {
             }}
             className="p-[10px] text-[14px]  border-r border-r-[#eaeaea] focus:outline-none"
           />
-          <input
-            type="text"
-            placeholder="Type supplier name"
-            value={products[i].supplier}
+          <select
+            value={products[i].supplier_id}
             required
             onChange={(e) => {
               const newProducts = [...products];
-              newProducts[i].supplier = e.target.value;
+              newProducts[i].supplier_id = e.target.value;
               setProducts(newProducts);
             }}
             className="p-[10px] text-[14px] truncate border-r border-r-[#eaeaea] focus:outline-none"
-          />
+          >
+            <option value="" disabled>
+              {isPending
+                ? "Loading suppliers..."
+                : error
+                ? "Failed to load suppliers"
+                : "Select supplier"}
+            </option>
+            {suppliers?.map((supplier) => (
+              <option key={supplier.id} value={supplier.id}>
+                {supplier.name}
+              </option>
+            ))}
+          </select>
           <div className="p-[10px] text-[14px] border-r border-r-[#eaeaea]">
             <input
               id={`product-image-${i}`}

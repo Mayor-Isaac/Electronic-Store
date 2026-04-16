@@ -28,3 +28,41 @@ export const createProduct = async (productData) => {
   if (error) throw error;
   return data;
 };
+
+
+export const getAllCategories = async (sortOption = "created_at") => {
+  const safeSortOption = sortOption || "created_at";
+  const isAscending = safeSortOption === "created_at" ? false : true;
+
+  const { data, error } = await supabase
+    .from("categories")
+    .select("*")
+    .order(safeSortOption, { ascending: isAscending });
+  if (error) throw error;
+  return data;
+};
+
+export const addCategory = async (newCategory) => {
+  const { data, error } = await supabase
+    .from("categories")
+    .insert([newCategory])
+    .select();
+  if (error) throw error;
+  return data;
+};
+
+export const updateCategory = async (updatedCategory) => {
+  const { id, ...categoryData } = updatedCategory;
+  const { data, error } = await supabase
+    .from("categories")
+    .update(categoryData)
+    .eq("id", id)
+    .select();
+  if (error) throw error;
+  return data;
+};
+
+export const deleteCategory = async (id) => {
+  const { error } = await supabase.from("categories").delete().eq("id", id);
+  if (error) throw error;
+};
