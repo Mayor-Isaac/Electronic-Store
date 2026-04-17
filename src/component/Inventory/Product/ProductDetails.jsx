@@ -7,13 +7,7 @@ export default function ProductDetails({ product, closeDetails, supplier }) {
     console.log("ProductDetails product===>", product);
     console.log("ProductDetails supplier===>", supplier);
   return (
-    <div className=" p-10 bg-white">
-      <div className="flex items-center justify-end">
-        <XIcon
-          onClick={closeDetails}
-          className="cursor-pointer text-[20px] hover:font-semibold transition ease-in-out "
-        />
-      </div>
+    <div className=" p-5 rounded-[5px] bg-white">
       <div className="flex gap-15">
         {/* Image */}
         <div className="p-[5px] text-[14px] w-[350px]">
@@ -21,17 +15,26 @@ export default function ProductDetails({ product, closeDetails, supplier }) {
             src={product.img_url}
             alt={product.name}
             loading="lazy"
-            className="w-full h-[400px]"
             decoding="async"
+            className="w-full h-[400px] object-contain bg-gray-100 rounded-md p-5"
+            width="350"
+            height="400"
           />
         </div>
         {/* Details */}
-        <div className="p-[10px]  capitalize min-w-[350px] max-w-[400px] flex flex-col gap-10">
+        <div className="p-[10px]  capitalize min-w-[350px] flex flex-col gap-10">
           {/* Product Information */}
           <div className="flex flex-col gap-3">
-            <p className="w-fit px-1 py-0.5 text-[14px] font-bold border-b-2 border-b-[#000]">
-              Product Info
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="w-fit px-1 py-0.5 text-[14px] font-bold border-b-2 border-b-[#000]">
+                Product Info
+              </p>
+              <XIcon
+                onClick={closeDetails}
+                className="cursor-pointer text-[20px] hover:font-semibold transition ease-in-out "
+              />
+            </div>
+
             <div className="flex flex-col gap-2">
               <div className="flex gap-1 items-center">
                 <p className="font-bold">Name:</p>
@@ -46,17 +49,17 @@ export default function ProductDetails({ product, closeDetails, supplier }) {
                 <p>{product.category || "-"}</p>
               </div>
               <div className="flex items-center gap-8">
-                <div className="flex gap-1 items-center min-w-[185px]">
+                <div className="flex gap-1 items-center min-w-[190px]">
                   <p className="font-bold">Cost Price:</p>
                   <p className="">{formatCurrency(product.cost_price)}</p>
                 </div>
-                <div className="flex gap-1 items-center">
+                <div className="flex gap-1 items-center w-fit">
                   <p className="font-bold">Selling Price:</p>
                   <p className="">{formatCurrency(product.selling_price)}</p>
                 </div>
               </div>
               <div className="flex items-center gap-8">
-                <div className="flex gap-1 items-center min-w-[185px]">
+                <div className="flex gap-1 items-center min-w-[190px]">
                   <p className="font-bold">Stock Quantity:</p>
                   <p className="">{product.stock_quantity}</p>
                 </div>
