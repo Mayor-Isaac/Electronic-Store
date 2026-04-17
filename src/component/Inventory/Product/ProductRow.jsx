@@ -1,4 +1,4 @@
-import { DotsThreeVerticalIcon, EnvelopeIcon, PencilIcon, PhoneCallIcon, TrashIcon } from '@phosphor-icons/react';
+import { DotsThreeVerticalIcon, EnvelopeIcon, FileTextIcon, PencilIcon, PhoneCallIcon, TrashIcon } from '@phosphor-icons/react';
 import React from 'react';
 import Overlay from '../../../ui/Overlay';
 import ConfirmationModal from '../../../ui/ConfirmationModal';
@@ -9,6 +9,7 @@ import AddSupplierForm from './AddSupplierForm';
 import formatCurrency from '../../../utils/formatCurrency';
 import useFetch from '../../../hooks/useFetch';
 import { getAllSuppliers } from '../Supplier/supplierAPI';
+import ProductDetails from './ProductDetails';
 
 export default function ProductRow({ data }) {
   const {
@@ -27,10 +28,10 @@ export default function ProductRow({ data }) {
         key: "suppliers",
     });
   
-  const supplierName = suppliers?.find((sup) => sup.id === supplier_id)?.name || "Unknown Supplier";
+  const supplier = suppliers?.find((sup) => sup.id === supplier_id) || "Unknown Supplier";
   
-  // const [showMenu, setShowMenu] = React.useState(false);
-  // const [showConfirmDelete, setShowConfirmDelete] = React.useState(false);
+  const [showMenu, setShowMenu] = React.useState(false);
+  const [showProductDetails, setShowProductDetails] = React.useState(false);
   // const [showEditForm, setShowEditForm] = React.useState(false);
 
   // const handleDeleteSupplier = useAlter({
@@ -63,7 +64,7 @@ export default function ProductRow({ data }) {
       <div className="p-[10px] text-[14px] capitalize">{name}</div>
       <div className="p-[10px] text-[14px] truncate">{description || "-"}</div>
       <div className="p-[10px] text-[14px] capitalize">{category || "-"}</div>
-      <div className="p-[10px] text-[14px] truncate">{supplierName}</div>
+      <div className="p-[10px] text-[14px] truncate">{supplier?.name}</div>
       <div className="p-[10px] text-[14px] font-bold">
         {formatCurrency(costPrice)}
       </div>
@@ -77,7 +78,7 @@ export default function ProductRow({ data }) {
         {quantityLeft}
       </div>
 
-      {/* <div className="relative p-[10px] text-[14px] flex items-center justify-center">
+      <div className="relative p-[10px] text-[14px] flex items-center justify-center">
         <button
           type="button"
           className="cursor-pointer"
@@ -92,62 +93,45 @@ export default function ProductRow({ data }) {
             className="absolute top-full right-0 mt-1 w-[150px] px-2 py-4 flex flex-col gap-3 rounded-md border border-[#eaeaea] bg-white shadow-md z-20"
             onMouseLeave={() => setShowMenu(false)}
           >
+            <div className="flex items-center cursor-pointer hover:font-medium transition ease-in-out gap-3" onClick={() => setShowProductDetails(true)}>
+                    <FileTextIcon size={18} className="ml-2" />
+                    <button type="button" className="cursor-pointer">
+                     View Details
+                    </button>
+                  </div>
             <div className="flex items-center cursor-pointer hover:font-medium transition ease-in-out gap-3">
               <PhoneCallIcon size={18} className="ml-2" />
               <button type="button" className="cursor-pointer">
-                <a href={`tel:${phone}`}>Call Supplier</a>
+                <a href={`tel:${supplier?.phone_num}`}>Call Supplier</a>
               </button>
             </div>
-            {email && (
+            {supplier?.email && (
               <div className="flex items-center cursor-pointer hover:font-medium transition ease-in-out gap-3">
                 <EnvelopeIcon size={18} className="ml-2" />
                 <button type="button" className="cursor-pointer">
-                  <a href={`mailto:${email}`}>Email Supplier</a>
+                  <a href={`mailto:${supplier?.email}`}>Email Supplier</a>
                 </button>
               </div>
             )}
-            <div
-              className="flex items-center cursor-pointer hover:font-medium transition ease-in-out gap-3"
-              onClick={() => setShowEditForm(true)}
-            >
-              <PencilIcon size={18} className="ml-2" />
-              <button type="button" className="cursor-pointer">
-                Edit Supplier
-              </button>
-            </div>
-            <div
-              className="flex items-center cursor-pointer text-red-600 hover:font-medium transition ease-in-out gap-3"
-              onClick={() => setShowConfirmDelete(true)}
-            >
-              <TrashIcon size={18} className="ml-2" />
-              <button type="button" className="cursor-pointer">
-                Delete Supplier
-              </button>
-            </div>
+
+            {/* <div
+                    className="flex items-center cursor-pointer text-red-600 hover:font-medium transition ease-in-out gap-3"
+                    onClick={() => setShowConfirmDelete(true)}
+                  >
+                    <TrashIcon size={18} className="ml-2" />
+                    <button type="button" className="cursor-pointer">
+                      Delete Supplier
+                    </button>
+                  </div> */}
           </div>
         )}
 
-        {showConfirmDelete && (
-          <Overlay>
-            <ConfirmationModal
-              message="Are you sure you want to delete this supplier?"
-              mode="delete"
-              onConfirm={handleDelete}
-              onCancel={() => setShowConfirmDelete(false)}
-            />
-          </Overlay>
-        )}
-
-        {showEditForm && (
-          <Overlay>
-            <AddSupplierForm
-              closeForm={() => setShowEditForm(false)}
-              supplierData={data}
-              mode="edit"
-            />
-          </Overlay>
-        )}
-      </div> */}
+        {showProductDetails && (
+                <Overlay>
+                    <ProductDetails product={data} supplier={supplier} closeDetails={() => setShowProductDetails(false)} />
+                </Overlay>
+              )}
+      </div>
     </div>
   );
 }

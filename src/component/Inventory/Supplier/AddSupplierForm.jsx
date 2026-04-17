@@ -93,7 +93,7 @@ const Form = function ({ userForm, setUserForm, handleSubmit, mode }) {
          Phone Number <span className="ml-1  text-red-500">*</span>
        </label>
        <input
-         type="text"
+         type="tel"
          id="phone_num"
          required
          value={userForm.phone_num}
@@ -122,7 +122,7 @@ const Form = function ({ userForm, setUserForm, handleSubmit, mode }) {
          Address
        </label>
        <input
-         type="text"
+         type="address"
          id="address"
          value={userForm.address}
          onChange={(e) => setUserForm({ ...userForm, address: e.target.value })}
