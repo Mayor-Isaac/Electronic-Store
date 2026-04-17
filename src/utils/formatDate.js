@@ -1,21 +1,28 @@
 const formatDate = (dateString) => {
   const date = new Date(dateString);
-  
-  const timeOptions = {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  };
-  
-  const dateOptions = {
-    year: 'numeric',
+
+  const weekday = date.toLocaleDateString('en-GB', {
+    weekday: 'long',
+    timeZone: 'UTC',
+  });
+
+  const datePart = date.toLocaleDateString('en-GB', {
+    day: 'numeric',
     month: 'long',
-    day: 'numeric'
-  };
-  
-  const timeStr = date.toLocaleTimeString(undefined, timeOptions);
-  const dateStr = date.toLocaleDateString(undefined, dateOptions);
-  
-  return `${timeStr}, ${dateStr}`;
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+
+  const timePart = date
+    .toLocaleTimeString('en-GB', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'UTC',
+    })
+    .replace(' ', '')
+    .toLowerCase();
+
+  return `${weekday}, ${datePart}, ${timePart}`;
 };
 export { formatDate };

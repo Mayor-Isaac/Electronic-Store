@@ -1,6 +1,7 @@
 import React from 'react'
 import formatCurrency from '../../../utils/formatCurrency';
-import { XIcon } from '@phosphor-icons/react';
+import { MapPinIcon, PhoneIcon, UserCircleIcon, XIcon } from '@phosphor-icons/react';
+import { formatDate } from '../../../utils/formatDate';
 
 export default function ProductDetails({ product, closeDetails, supplier }) {
     console.log("ProductDetails product===>", product);
@@ -31,8 +32,8 @@ export default function ProductDetails({ product, closeDetails, supplier }) {
             <p className="w-fit px-1 py-0.5 text-[14px] font-bold border-b-2 border-b-[#000]">
               Product Info
             </p>
-            <div className="flex flex-col gap-4">
-              <div className="flex gap-1">
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-1 items-center">
                 <p className="font-bold">Name:</p>
                 <p className="">{product.name}</p>
               </div>
@@ -40,35 +41,45 @@ export default function ProductDetails({ product, closeDetails, supplier }) {
                 <p className="font-bold">Product Description:</p>
                 <p>{product.description || "-"}</p>
               </div>
-              <div className="flex gap-1">
+              <div className="flex gap-1 items-center">
                 <p className="font-bold">Category:</p>
                 <p>{product.category || "-"}</p>
               </div>
-              <div className="flex gap-1">
-                <p className="font-bold">Cost Price:</p>
-                <p className="">{formatCurrency(product.cost_price)}</p>
+              <div className="flex items-center gap-8">
+                <div className="flex gap-1 items-center min-w-[185px]">
+                  <p className="font-bold">Cost Price:</p>
+                  <p className="">{formatCurrency(product.cost_price)}</p>
+                </div>
+                <div className="flex gap-1 items-center">
+                  <p className="font-bold">Selling Price:</p>
+                  <p className="">{formatCurrency(product.selling_price)}</p>
+                </div>
               </div>
-              <div className="flex gap-1">
-                <p className="font-bold">Selling Price:</p>
-                <p className="">{formatCurrency(product.selling_price)}</p>
+              <div className="flex items-center gap-8">
+                <div className="flex gap-1 items-center min-w-[185px]">
+                  <p className="font-bold">Stock Quantity:</p>
+                  <p className="">{product.stock_quantity}</p>
+                </div>
+                <div className="flex gap-1 items-center">
+                  <p className="font-bold">Quantity Sold:</p>
+                  <p className="">
+                    {product.stock_quantity - product.quantity_left}
+                  </p>
+                </div>
               </div>
-              <div className="flex gap-1">
-                <p className="font-bold">Selling Price:</p>
-                <p className="">{formatCurrency(product.selling_price)}</p>
-              </div>
-              <div className="flex gap-1">
-                <p className="font-bold">Stock Quantity:</p>
-                <p className="">{product.stock_quantity}</p>
-              </div>
-              <div className="flex gap-1">
-                <p className="font-bold">Quantity Sold:</p>
-                <p className="">
-                  {product.stock_quantity - product.quantity_left}
+              <div className="flex gap-1 items-center">
+                <p className="font-bold">Available Quantity:</p>
+                <p
+                  className={`${product.quantity_left > 50 ? "text-green-600" : product.quantity_left < 50 && product.quantity_left > 10 ? "text-yellow-600" : "text-red-600"}`}
+                >
+                  {product.quantity_left}
                 </p>
               </div>
-              <div className="flex gap-1">
-                <p className="font-bold">Available Quantity:</p>
-                <p className="">{product.quantity_left}</p>
+              <div className="flex gap-1 items-center">
+                <p className="font-bold">Date Added:</p>
+                <p className="text-[14.5px] italic">
+                  {formatDate(product.created_at)}
+                </p>
               </div>
             </div>
           </div>
@@ -78,7 +89,25 @@ export default function ProductDetails({ product, closeDetails, supplier }) {
             <p className="w-fit px-1 py-0.5 text-[14px] font-bold border-b-2 border-b-[#000]">
               Supplier Info
             </p>
-            <p>Supplier: {supplier?.name || "-"}</p>
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2 items-center">
+                <UserCircleIcon size={20} />
+                <p className="">{supplier?.name}</p>
+              </div>
+              <div className="flex gap-2 items-center">
+                <MapPinIcon size={20} />
+                <p className="">{supplier?.address}</p>
+              </div>
+              <div className="flex gap-2 items-center">
+                <PhoneIcon size={20} />
+                <a
+                  href={`tel:${supplier?.phone_num}`}
+                  className="text-blue-500"
+                >
+                  {supplier?.phone_num}
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
