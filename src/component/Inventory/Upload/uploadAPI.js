@@ -30,14 +30,9 @@ export const createProduct = async (productData) => {
 };
 
 
-export const getAllCategories = async (sortOption = "created_at") => {
-  const safeSortOption = sortOption || "created_at";
-  const isAscending = safeSortOption === "created_at" ? false : true;
+export const getAllCategories = async () => {
 
-  const { data, error } = await supabase
-    .from("categories")
-    .select("*")
-    .order(safeSortOption, { ascending: isAscending });
+  const { data, error } = await supabase.from("categories").select("*");
   if (error) throw error;
   return data;
 };
@@ -45,7 +40,7 @@ export const getAllCategories = async (sortOption = "created_at") => {
 export const addCategory = async (newCategory) => {
   const { data, error } = await supabase
     .from("categories")
-    .insert([newCategory])
+    .insert(newCategory)
     .select();
   if (error) throw error;
   return data;

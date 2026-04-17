@@ -3,7 +3,7 @@ import React from 'react'
 import { useState } from 'react'
 import useAlter from '../../../hooks/useAlter';
 import useFetch from '../../../hooks/useFetch';
-import { createProduct, uploadProductImage } from './uploadAPI';
+import { createProduct, getAllCategories, uploadProductImage } from './uploadAPI';
 import { toast } from 'react-toastify';
 import { getAllSuppliers } from '../Supplier/supplierAPI';
 
@@ -21,12 +21,33 @@ const emptyProduct = {
 
 export default function UploadForm() {
   const [products, setProducts] = useState([{ ...emptyProduct }]);
-  const [newCategory, setNewCategory] = useState("");
 
-   const { data: suppliers, isPending, error } = useFetch({
+   const { data: suppliers, isPending:loadSupplier, error } = useFetch({
       queryFn: () => getAllSuppliers("created_at"),
       key: "suppliers",
+   });
+  
+   const { data: categories, isPending:loadCategories } = useFetch({
+      queryFn: getAllCategories,
+      key: "categories",
+   });
+  
+  const isPending = loadSupplier || loadCategories
+
+  const uniqueCategories = React.useMemo(() => {
+    if (!categories) return [];
+
+    const categoryMap = new Map();
+    categories.forEach((category) => {
+      const normalizedName = category?.name?.trim().toLowerCase();
+      if (!normalizedName || categoryMap.has(normalizedName)) return;
+      categoryMap.set(normalizedName, category);
     });
+
+    return Array.from(categoryMap.values());
+  }, [categories]);
+  
+  console.log("categories   ===>", categories);
 
   // Mutation for creating the product
   const productMutation = useAlter({
@@ -71,7 +92,7 @@ export default function UploadForm() {
       {products.map((product, i) => (
         <div
           key={i}
-          className="grid grid-cols-[45px_1fr_280px_120px_120px_120px_120px_190px_120px_65px] items-center border-b border-b-[#eaeaea] "
+          className="grid grid-cols-[45px_1fr_280px_120px_120px_120px_180px_190px_120px_65px] items-center border-b border-b-[#eaeaea] "
         >
           <div className="p-[10px] text-[14px] text-center border-r border-r-[#eaeaea] focus:outline-none">
             {i + 1}
@@ -140,17 +161,31 @@ export default function UploadForm() {
             }}
             className="p-[10px] text-[14px]  border-r border-r-[#eaeaea] focus:outline-none"
           />
-          <input
-            type="text"
-            placeholder="Category"
+          <select
             value={products[i].category}
+            required
             onChange={(e) => {
               const newProducts = [...products];
               newProducts[i].category = e.target.value;
               setProducts(newProducts);
             }}
-            className="p-[10px] text-[14px]  border-r border-r-[#eaeaea] focus:outline-none"
-          />
+            className="p-[10px] capitalize text-[14px] truncate border-r border-r-[#eaeaea] focus:outline-none"
+          >
+            <option value="" disabled>
+              {isPending ? "Loading categories..." : "Select category"}
+            </option>
+            {uniqueCategories.length === 0 && !isPending && (
+              <option value="" disabled>
+                Click Add Category to create new category
+              </option>
+            )}
+            {uniqueCategories.map((category) => (
+              <option  key={category.id} value={category.name}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+
           <select
             value={products[i].supplier_id}
             required
@@ -165,8 +200,8 @@ export default function UploadForm() {
               {isPending
                 ? "Loading suppliers..."
                 : error
-                ? "Failed to load suppliers"
-                : "Select supplier"}
+                  ? "Failed to load suppliers"
+                  : "Select supplier"}
             </option>
             {suppliers?.map((supplier) => (
               <option key={supplier.id} value={supplier.id}>
