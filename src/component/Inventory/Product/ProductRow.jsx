@@ -1,11 +1,6 @@
-import { DotsThreeVerticalIcon, EnvelopeIcon, FileTextIcon, PencilIcon, PhoneCallIcon, TrashIcon } from '@phosphor-icons/react';
+import { DotsThreeVerticalIcon, EnvelopeIcon, FileTextIcon, PhoneCallIcon } from '@phosphor-icons/react';
 import React from 'react';
 import Overlay from '../../../ui/Overlay';
-import ConfirmationModal from '../../../ui/ConfirmationModal';
-import { toast } from 'react-toastify';
-import useAlter from '../../../hooks/useAlter';
-import { deleteSupplier } from './supplierAPI';
-import AddSupplierForm from './AddSupplierForm';
 import formatCurrency from '../../../utils/formatCurrency';
 import useFetch from '../../../hooks/useFetch';
 import { getAllSuppliers } from '../Supplier/supplierAPI';
@@ -32,21 +27,7 @@ export default function ProductRow({ data }) {
   
   const [showMenu, setShowMenu] = React.useState(false);
   const [showProductDetails, setShowProductDetails] = React.useState(false);
-  // const [showEditForm, setShowEditForm] = React.useState(false);
-
-  // const handleDeleteSupplier = useAlter({
-  //   mutationFn: deleteSupplier,
-  //   key: "suppliers",
-  //   onSuccessCallback: () => {
-  //     setShowConfirmDelete(false);
-  //     toast.success(`${data.name} deleted successfully!`);
-  //   },
-  // });
-
-  // const handleDelete = (e) => {
-  //   e.preventDefault();
-  //   handleDeleteSupplier.mutate(data.id);
-  // };
+ 
 
   console.log("ProductRow data===>", data);
 
@@ -114,15 +95,6 @@ export default function ProductRow({ data }) {
               </div>
             )}
 
-            {/* <div
-                    className="flex items-center cursor-pointer text-red-600 hover:font-medium transition ease-in-out gap-3"
-                    onClick={() => setShowConfirmDelete(true)}
-                  >
-                    <TrashIcon size={18} className="ml-2" />
-                    <button type="button" className="cursor-pointer">
-                      Delete Supplier
-                    </button>
-                  </div> */}
           </div>
         )}
 

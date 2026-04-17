@@ -1,27 +1,27 @@
 import React from 'react'
-import UploadForm from './UploadForm';
+import SalesForm from './SalesForm';
 import useAlter from '../../../hooks/useAlter';
 import useFetch from '../../../hooks/useFetch';
-import { addCategory, getAllCategories } from './uploadAPI';
+import { addCategory, getAllCategories } from './salesAPI';
 import { toast } from 'react-toastify';
+import { getAllProducts } from '../Product/productAPI';
 
 export default function Sales() {
   const [showCategoryForm, setShowCategoryForm] = React.useState(false);
 
 
-
+  
   return (
     <div>
       <h3 className="text-3xl font-medium my-4 ">Record Sales</h3>
 
-      <div className="grid grid-cols-[45px_1fr_100px_190px_190px_1fr_70px]  items-center  bg-[#E8EFF9]  rounded-tr-lg rounded-tl-lg">
+      <div className="grid grid-cols-[45px_1fr_100px_190px_190px_70px]  items-center  bg-[#E8EFF9]  rounded-tr-lg rounded-tl-lg">
         {[
           "S/N",
           "Product",
           "Quantity",
           "Selling Price",
-          "Total Amount",
-          "Customer Name",
+          "Amount",
           "Action"
         ].map((item, index) => {
           return (
@@ -50,7 +50,7 @@ export default function Sales() {
           );
         })} */}
       </div>
-      <UploadForm />
+      <SalesForm />
     </div>
   );
 }

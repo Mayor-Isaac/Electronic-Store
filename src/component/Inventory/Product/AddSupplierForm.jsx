@@ -2,7 +2,7 @@ import { FilePlusIcon, PencilIcon, XIcon } from '@phosphor-icons/react'
 import React from 'react'
 import BlueButton from '../../../ui/BlueButton';
 import useAlter from '../../../hooks/useAlter';
-import { addSupplier, updateSupplier } from './supplierAPI';
+import { addSupplier, updateSupplier } from './productAPI';
 import { toast } from 'react-toastify';
 
 export default function AddSupplierForm({ closeForm, supplierData, mode = "add" }) {
