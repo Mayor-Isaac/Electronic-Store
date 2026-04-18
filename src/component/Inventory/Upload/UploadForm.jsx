@@ -47,7 +47,6 @@ export default function UploadForm() {
     return Array.from(categoryMap.values());
   }, [categories]);
   
-  console.log("categories   ===>", categories);
 
   // Mutation for creating the product
   const productMutation = useAlter({

@@ -6,7 +6,6 @@ import { addSupplier, updateSupplier } from './supplierAPI';
 import { toast } from 'react-toastify';
 
 export default function AddSupplierForm({ closeForm, supplierData, mode = "add" }) {
-  // console.log("Supplier data received in AddSupplierForm===>", supplierData);
 
     const [userForm, setUserForm] = React.useState({
         name: supplierData?.name || "",

@@ -37,7 +37,6 @@ export default function SalesForm() {
   );
   
   const handleProductSelect = (product, index) => {
-    console.log(product);
     const newItems = [...items];
     newItems[index].product_id = product.id;
     newItems[index].name = product.name;

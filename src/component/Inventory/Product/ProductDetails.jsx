@@ -4,8 +4,6 @@ import { MapPinIcon, PhoneIcon, UserCircleIcon, XIcon } from '@phosphor-icons/re
 import { formatDate } from '../../../utils/formatDate';
 
 export default function ProductDetails({ product, closeDetails, supplier }) {
-    console.log("ProductDetails product===>", product);
-    console.log("ProductDetails supplier===>", supplier);
   return (
     <div className=" p-5 rounded-[5px] bg-white">
       <div className="flex gap-15">
