@@ -221,7 +221,7 @@ export default function SalesForm() {
       {grandTotal > 0 && (
         <div className="grid grid-cols-[1fr_1fr_190px_190px_70px] items-center py-2.5 border-b border-b-[#eaeaea] ">
           <div className="px-3 flex items-center gap-3">
-            <h2 className=" font-semibold text-3xl">Customer Name:</h2>
+            <h2 className=" font-semibold text-2xl">Customer Name:</h2>
             <input
               type="text"
               placeholder="Enter customer name... (Optional)"
@@ -233,7 +233,7 @@ export default function SalesForm() {
             />
           </div>
           <div className="px-3 flex items-center gap-3">
-            <h2 className=" font-semibold text-3xl">
+            <h2 className=" font-semibold text-2xl">
               Payment Method <span className="text-red-600">*</span> :
             </h2>
             <select
@@ -291,15 +291,18 @@ const ProductListModal = ({ data, onSelect, index }) => {
 
   return (
     <div className="absolute bg-white z-10 min-w-[150px] left-2 top-[110%] shadow border border-[#eaeaea] rounded-[8px] py-2">
-      {list.map((item, i) => (
-        <div
-          key={item.id}
-          className={`py-2 px-4 hover:bg-gray-100 ${i !== list.length - 1 ? 'border-b border-b-[#eaeaea]' : ''} cursor-pointer`}
-          onClick={() => onSelect(item, index)}
-        >
+      {list.length === 0 ? (
+        <div className="py-2 px-4 text-gray-500">No products found</div>
+      ) : (
+        list.map((item, i) => (
+          <div
+            key={item.id}
+            className={`py-2 px-4 hover:bg-gray-100 ${i !== list.length - 1 ? 'border-b border-b-[#eaeaea]' : ''} cursor-pointer`}
+            onClick={() => onSelect(item, index)}
+          >
           {item.name}
         </div>
-      ))}
+      )))}
     </div>
   );
 }

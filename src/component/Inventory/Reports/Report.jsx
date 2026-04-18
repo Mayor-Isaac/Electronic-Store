@@ -5,32 +5,52 @@ import EmptyTable from "../../../ui/EmptyTable";
 import Spinner from "../../../ui/Spinner";
 import ReportRow from "./ReportRow";
 import { XIcon } from "@phosphor-icons/react";
+import { getOrderRecord } from "../../OrderCart/Order/orderAPI";
 
 export default function Report() {
 
     const [searchTerm, setSearchTerm] = React.useState("");
-    const [sortOption, setSortOption] = React.useState("created_at_desc");
+    const [filterOption, setFilterOption] = React.useState("all");
+    const [sortOption, setSortOption] = React.useState("created_at");
 
   const { data: salesRecords, isPending: isLoading } = useFetch({
     queryFn: getAllSalesRecords,
     key: "salesRecords",
   });
-    
-    const filteredRecords = salesRecords?.filter((record) =>
-      record.customer_name.toLowerCase().includes(searchTerm.toLowerCase()),
-    )
-    .sort((a, b) => {
-      if (sortOption === "name") {
-        return a.customer_name.localeCompare(b.customer_name);
-      }
-      if (sortOption === "amount_paid_asc") {
-        return a.total_amount - b.total_amount;
-      }
-      if (sortOption === "amount_paid_desc") {
-        return b.total_amount - a.total_amount;
-      }
-      return 0;
-    });
+
+  const { data: orderRecords, isPending: isOrderLoading } = useFetch({
+    queryFn: getOrderRecord,
+    key: "orderRecords",
+  });
+
+  const paidOrders = orderRecords?.filter((order) => order.status === "delivered") || [];
+
+  const concatenatedRecords = salesRecords && paidOrders && [...salesRecords, ...paidOrders];
+
+  const filteredRecords = filterOption === "all" ? concatenatedRecords : filterOption === "walk-in" ? salesRecords : paidOrders;
+
+  const sortedRecords = filteredRecords && [...filteredRecords]?.sort((a, b) => {
+    if (sortOption === "name") {
+      return a.customer_name.localeCompare(b.customer_name);
+    }
+    if (sortOption === "created_at") {
+      return new Date(b.created_at) - new Date(a.created_at);
+    }
+    if (sortOption === "amount_paid_asc") {
+      return a.total_amount - b.total_amount;
+    }
+    if (sortOption === "amount_paid_desc") {
+      return b.total_amount - a.total_amount;
+    }
+    return 0;
+  })
+
+  const searchedRecords =
+    sortedRecords && searchTerm === ""
+      ? sortedRecords
+      : sortedRecords?.filter((record) =>
+          record.customer_name.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
 
 
   return (
@@ -57,14 +77,13 @@ export default function Report() {
           <div className="flex items-center gap-2">
             <h3 className="">Filter: </h3>
             <select
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
+              value={filterOption}
+              onChange={(e) => setFilterOption(e.target.value)}
               className="border border-[#eaeaea] rounded-[8px] py-2 px-3 focus:outline-none"
             >
-              <option value="name">Name</option>
-              <option value="created_at_desc">Date Added</option>
-              <option value="amount_paid_asc">Amount Paid (asc)</option>
-              <option value="amount_paid_desc">Amount Paid (desc)</option>
+              <option value="all">All</option>
+              <option value="walk-in">Walk-in</option>
+              <option value="order">Order</option>
             </select>
           </div>
 
@@ -75,17 +94,12 @@ export default function Report() {
               onChange={(e) => setSortOption(e.target.value)}
               className="border border-[#eaeaea] rounded-[8px] py-2 px-3 focus:outline-none"
             >
-              <option value="created_at_desc">Date Added</option>
+              <option value="created_at">Date Added</option>
               <option value="name">Name</option>
               <option value="amount_paid_asc">Amount Paid (asc)</option>
               <option value="amount_paid_desc">Amount Paid (desc)</option>
             </select>
           </div>
-          {/* <BlueButton
-                  icon={"Plus"}
-                  text={"Add Supplier"}
-                  onClick={() => setShowForm(true)}
-                /> */}
         </div>
       </header>
       <div>
@@ -120,7 +134,7 @@ export default function Report() {
         </div>
         {isLoading ? (
           <Spinner />
-        ) : filteredRecords.length === 0 ? (
+        ) : searchedRecords.length === 0 ? (
           <EmptyTable
             info="No record found"
             instruction={
@@ -130,7 +144,7 @@ export default function Report() {
             }
           />
         ) : (
-          filteredRecords.map((record) => (
+          searchedRecords.map((record) => (
             <ReportRow key={record.id} reportData={record} />
           ))
         )}

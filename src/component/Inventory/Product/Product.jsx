@@ -25,6 +25,8 @@ export default function Products() {
   });
   if (error) return toast.error("Error fetching products: " + error.message);
 
+  console.log("Products data:", products); // Debugging log
+
 
   return (
     <div className="p-5 flex flex-col gap-5">
