@@ -41,3 +41,20 @@ export const addCategory = async (categoryData) => {
   if (error) throw error;
   return data;
 };
+
+export const updateProductQty = (items) => {
+
+  items.map(async (items) => {
+    const { product_id, quantity_left } = items;
+    const { data, error } = await supabase
+      .from("products")
+      .update({ quantity_left: quantity_left })
+      .eq("id", product_id)
+      .select();
+    
+    if( error) {
+      throw error;
+    }
+  });
+
+};

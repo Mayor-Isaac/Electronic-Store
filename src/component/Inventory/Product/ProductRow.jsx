@@ -29,8 +29,6 @@ export default function ProductRow({ data }) {
   const [showProductDetails, setShowProductDetails] = React.useState(false);
  
 
-  console.log("ProductRow data===>", data);
-
   return (
     <div className="grid grid-cols-[80px_250px_120px_1fr_200px_130px_130px_130px_130px_75px] items-center border-b border-b-[#eaeaea]">
       <div className="p-[5px] text-[14px]">

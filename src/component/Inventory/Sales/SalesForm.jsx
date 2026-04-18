@@ -6,7 +6,7 @@ import useFetch from '../../../hooks/useFetch';
 import { toast } from 'react-toastify';
 import { getAllSuppliers } from '../Supplier/supplierAPI';
 import { getAllProducts } from '../Product/productAPI';
-import { createItems, createSalesRecord } from './salesAPI';
+import { createItems, createSalesRecord, updateProductQty } from './salesAPI';
 
 const emptyItem = {
   product_id: "",
@@ -51,8 +51,8 @@ export default function SalesForm() {
    0,
   );
   
-  const createItemMutation = useAlter({
-    mutationFn: createItems,
+  const reduceItemsQty = useAlter({
+    mutationFn: updateProductQty,
     key: "sales_items",
     onSuccessCallback: () => {
       toast.success("Sale recorded successfully!");
@@ -63,12 +63,32 @@ export default function SalesForm() {
 
   });
   
+  const createSalesMutation = useAlter({
+    mutationFn: createItems,
+    key: "sales_items",
+    onSuccessCallback: () => {
+      reduceItemsQty.mutate(
+        items.map((item) => {
+          const matchedProduct = (products ?? []).find(
+            (p) => p.id === item.product_id,
+          );
+
+          return {
+            product_id: item.product_id,
+            quantity_left:
+              (Number(matchedProduct?.quantity_left) || 0) -
+              (Number(item.quantity) || 0),
+          };
+        }),
+      );
+    }
+
+  });
+  
   const createSalesRecordMutation = useAlter({
     mutationFn: createSalesRecord,
     key: "sales_record",
     onSuccessCallback: (data) => {
-      console.log("Data from createSalesRecord===>", data);
-
       const salesItemsData = items.map((item) => ({
         product_id: item.product_id,
         quantity: Number(item.quantity),
@@ -76,12 +96,7 @@ export default function SalesForm() {
         sales_record_id: data[0].id,
       }));
 
-      createItemMutation.mutate(salesItemsData);
-
-      // toast.success("Sale recorded successfully!");
-      // setItems([{ ...emptyItem }]);
-      // setCustomerName("");
-      // setPaymentMethod("");
+      createSalesMutation.mutate(salesItemsData);
     }
 
   });
@@ -126,7 +141,7 @@ export default function SalesForm() {
       {items.map((product, i) => (
         <div
           key={i}
-          className="grid grid-cols-[45px_1fr_100px_190px_190px_70px] items-center border-b border-b-[#eaeaea] "
+          className="grid grid-cols-[45px_1fr_100px_100px_190px_190px_70px] items-center border-b border-b-[#eaeaea] "
         >
           <div className="p-[10px] text-[14px] text-center border-r border-r-[#eaeaea] focus:outline-none">
             {i + 1}
@@ -156,6 +171,23 @@ export default function SalesForm() {
               className="p-[10px] text-[14px] w-full border-r border-r-[#eaeaea] focus:outline-none"
             />
           </div>
+          <input
+            type="number"
+            placeholder="0"
+            readOnly
+            min={0}
+            value={items[i].quantity}
+            onChange={(e) => {
+              const newItems = [...items];
+              newItems[i].quantity = Number(e.target.value);
+              newItems[i].total =
+                (Number(e.target.value) || 0) *
+                (Number(items[i].unit_price_sale) || 0);
+              setItems(newItems);
+            }}
+            className="p-[10px] text-[14px] w-full border-r border-r-[#eaeaea] focus:outline-none"
+          />
+
           <input
             type="number"
             placeholder="0"

@@ -15,14 +15,15 @@ export default function Sales() {
     <div>
       <h3 className="text-3xl font-medium my-4 ">Record Sales</h3>
 
-      <div className="grid grid-cols-[45px_1fr_100px_190px_190px_70px]  items-center  bg-[#E8EFF9]  rounded-tr-lg rounded-tl-lg">
+      <div className="grid grid-cols-[45px_1fr_100px_100px_190px_190px_70px]  items-center  bg-[#E8EFF9]  rounded-tr-lg rounded-tl-lg">
         {[
           "S/N",
           "Product",
+          "Quantity Left",
           "Quantity",
           "Selling Price",
           "Amount",
-          "Action"
+          "Action",
         ].map((item, index) => {
           return (
             <div key={index} className="p-[10px] text-[14px] font-bold">
