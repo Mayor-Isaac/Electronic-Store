@@ -6,7 +6,7 @@ import useFetch from '../../../hooks/useFetch';
 import { toast } from 'react-toastify';
 import { getAllSuppliers } from '../Supplier/supplierAPI';
 import { getAllProducts } from '../Product/productAPI';
-import { createItems } from './salesAPI';
+import { createItems, createSalesRecord } from './salesAPI';
 
 const emptyItem = {
   product_id: "",
@@ -63,17 +63,38 @@ export default function SalesForm() {
 
   });
   
+  const createSalesRecordMutation = useAlter({
+    mutationFn: createSalesRecord,
+    key: "sales_record",
+    onSuccessCallback: (data) => {
+      console.log("Data from createSalesRecord===>", data);
+
+      const salesItemsData = items.map((item) => ({
+        product_id: item.product_id,
+        quantity: Number(item.quantity),
+        unit_price_at_sale: Number(item.unit_price_sale),
+        sales_record_id: data[0].id,
+      }));
+
+      createItemMutation.mutate(salesItemsData);
+
+      // toast.success("Sale recorded successfully!");
+      // setItems([{ ...emptyItem }]);
+      // setCustomerName("");
+      // setPaymentMethod("");
+    }
+
+  });
+  
   const handleSubmit = (e) => {
     e.preventDefault();
 
-
-    const salesItemsData = items.map((item) => ({
-      product_id: item.product_id,
-      quantity: Number(item.quantity),
-      unit_price_at_sale: Number(item.unit_price_sale),
-    }));
-
-    createItemMutation.mutate(salesItemsData);
+    const salesData = {
+      customer_name: customerName.trim() || "Walk-in Customer",
+      payment_method: paymentMethod,
+      total_amount: grandTotal,
+    };
+      createSalesRecordMutation.mutate(salesData);
 
     // try {
     //   for (const product of products) {
