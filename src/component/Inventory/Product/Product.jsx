@@ -98,8 +98,9 @@ export default function Products() {
           })}
         </div>
 
+
         {isPending ? (
-          <Spinner />
+        <Spinner />
         ) : products.length === 0 ? (
           <EmptyTable
             info="No products found"
