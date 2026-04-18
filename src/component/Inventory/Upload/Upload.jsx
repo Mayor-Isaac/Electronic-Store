@@ -103,7 +103,6 @@ const CategoryForm = ({ setShowCategoryForm }) => {
     <form
       onSubmit={handleAddCategory}
       className="mb-4 flex flex-wrap absolute top-20 items-end gap-5 rounded-lg border border-gray-200 bg-gray-50 p-4"
-      onMouseLeave={() => setShowCategoryForm(false)}
     >
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium">

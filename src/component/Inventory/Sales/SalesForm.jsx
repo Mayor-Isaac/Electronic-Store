@@ -113,8 +113,6 @@ export default function SalesForm() {
     };
       createSalesRecordMutation.mutate(salesData);
   };
-
-  console.log(items);
   
   return (
     <form onSubmit={(e) => handleSubmit(e)}>
@@ -183,7 +181,7 @@ export default function SalesForm() {
             readOnly
             min={0}
             value={items[i].initial_quantity_left}
-            className="p-[10px] text-[14px] bg-slate-50 w-full border-r border-r-[#eaeaea] focus:outline-none"
+            className="p-[10px] text-[14px] bg-slate-50 w-full font-bold border-r border-r-[#eaeaea] focus:outline-none"
           />
 
           <input
@@ -206,7 +204,7 @@ export default function SalesForm() {
             readOnly
             placeholder="0.00"
             value={items[i].total ? items[i].total.toFixed(2) : "0.00"}
-            className="p-[10px] text-[14px]  border-r bg-slate-50 border-r-[#eaeaea] focus:outline-none"
+            className="p-[10px] text-[14px] font-bold border-r bg-slate-50 border-r-[#eaeaea] focus:outline-none"
           />
 
           <div
