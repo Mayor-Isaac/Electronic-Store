@@ -28,11 +28,6 @@ export default function ReportRow({ reportData }) {
     
     const itemsBought = salesItemsRecords?.filter((item) => item.sales_record_id === reportData.id) || [];
     
-    console.log("products", products);
-    console.log("salesItemsRecords", salesItemsRecords);
-    console.log("reportData", reportData);
-    console.log("itemsBought", itemsBought);
-    
   return (
     <div className="grid grid-cols-[235px_200px_1fr_190px_140px] border-b-2">
       <div className="p-[10px] text-[14px] border-r border-r-[#eaeaea]">

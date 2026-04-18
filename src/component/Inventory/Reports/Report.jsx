@@ -16,8 +16,7 @@ export default function Report() {
     key: "salesRecords",
   });
     
-    const filteredRecords = salesRecords
-    .filter((record) =>
+    const filteredRecords = salesRecords?.filter((record) =>
       record.customer_name.toLowerCase().includes(searchTerm.toLowerCase()),
     )
     .sort((a, b) => {
