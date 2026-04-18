@@ -10,6 +10,7 @@ import { createItems, createSalesRecord, updateProductQty } from './salesAPI';
 
 const emptyItem = {
   product_id: "",
+  initial_quantity_left: "",
   quantity: "",
   unit_price_sale: "",
   name: "",
@@ -28,7 +29,7 @@ export default function SalesForm() {
       error,
     } = useFetch({
       queryFn: getAllProducts,
-      key: "products",
+      key: ["products", productQuery],
     });
 
     const matchedProducts = (products ?? []).filter((product) =>
@@ -36,10 +37,12 @@ export default function SalesForm() {
   );
   
   const handleProductSelect = (product, index) => {
+    console.log(product);
     const newItems = [...items];
     newItems[index].product_id = product.id;
     newItems[index].name = product.name;
     newItems[index].unit_price_sale = product.selling_price;
+    newItems[index].initial_quantity_left = product.quantity_left;
     setItems(newItems);
     setProductQuery("");
     setActiveRowIndex(null);
@@ -53,14 +56,13 @@ export default function SalesForm() {
   
   const reduceItemsQty = useAlter({
     mutationFn: updateProductQty,
-    key: "sales_items",
+    key: "products",
     onSuccessCallback: () => {
       toast.success("Sale recorded successfully!");
       setItems([{ ...emptyItem }]);
       setCustomerName("");
       setPaymentMethod("");
-    }
-
+    },
   });
   
   const createSalesMutation = useAlter({
@@ -110,38 +112,16 @@ export default function SalesForm() {
       total_amount: grandTotal,
     };
       createSalesRecordMutation.mutate(salesData);
-
-    // try {
-    //   for (const product of products) {
-    //     let img_url = "";
-
-    //     if (product.image_file) {
-    //       img_url = await uploadProductImage(product.image_file);
-    //     }
-
-    //     const { image_file, image_name, ...productData } = product;
-    //     await productMutation.mutateAsync({
-    //       ...productData,
-    //       stock_quantity: Number(productData.stock_quantity),
-    //       cost_price: Number(productData.cost_price),
-    //       selling_price: Number(productData.selling_price),
-    //       img_url,
-    //       quantity_left: Number(productData.stock_quantity),
-    //     });
-    //   }
-
-    //   setProducts([{ ...emptyItem }]);
-    // } catch (err) {
-    //   toast.error("Upload failed: " + err.message);
-    // }
   };
+
+  console.log(items);
   
   return (
     <form onSubmit={(e) => handleSubmit(e)}>
       {items.map((product, i) => (
         <div
           key={i}
-          className="grid grid-cols-[45px_1fr_100px_100px_190px_190px_70px] items-center border-b border-b-[#eaeaea] "
+          className="grid grid-cols-[45px_1fr_100px_120px_190px_190px_70px] items-center border-b border-b-[#eaeaea] "
         >
           <div className="p-[10px] text-[14px] text-center border-r border-r-[#eaeaea] focus:outline-none">
             {i + 1}
@@ -171,11 +151,20 @@ export default function SalesForm() {
               className="p-[10px] text-[14px] w-full border-r border-r-[#eaeaea] focus:outline-none"
             />
           </div>
+
           <input
             type="number"
             placeholder="0"
-            readOnly
             min={0}
+            max={items[i].initial_quantity_left}
+            onInvalid={(e) => {
+              if (e.target.validity.rangeOverflow) {
+                e.target.setCustomValidity(
+                  `${items[i].name} has only ${items[i].initial_quantity_left} units left in stock`,
+                );
+              }
+            }}
+            onInput={(e) => e.target.setCustomValidity("")}
             value={items[i].quantity}
             onChange={(e) => {
               const newItems = [...items];
@@ -191,17 +180,10 @@ export default function SalesForm() {
           <input
             type="number"
             placeholder="0"
+            readOnly
             min={0}
-            value={items[i].quantity}
-            onChange={(e) => {
-              const newItems = [...items];
-              newItems[i].quantity = Number(e.target.value);
-              newItems[i].total =
-                (Number(e.target.value) || 0) *
-                (Number(items[i].unit_price_sale) || 0);
-              setItems(newItems);
-            }}
-            className="p-[10px] text-[14px] w-full border-r border-r-[#eaeaea] focus:outline-none"
+            value={items[i].initial_quantity_left}
+            className="p-[10px] text-[14px] bg-slate-50 w-full border-r border-r-[#eaeaea] focus:outline-none"
           />
 
           <input
@@ -224,7 +206,7 @@ export default function SalesForm() {
             readOnly
             placeholder="0.00"
             value={items[i].total ? items[i].total.toFixed(2) : "0.00"}
-            className="p-[10px] text-[14px]  border-r border-r-[#eaeaea] focus:outline-none"
+            className="p-[10px] text-[14px]  border-r bg-slate-50 border-r-[#eaeaea] focus:outline-none"
           />
 
           <div
@@ -246,21 +228,23 @@ export default function SalesForm() {
             <input
               type="text"
               placeholder="Enter customer name... (Optional)"
-              className='w-full flex-1 focus:outline-none border border-[#eaeaea] rounded-[8px] py-2 px-3'
+              className="w-full flex-1 focus:outline-none border border-[#eaeaea] rounded-[8px] py-2 px-3"
               value={customerName}
               onChange={(e) => {
                 setCustomerName(e.target.value);
-              }} />
+              }}
+            />
           </div>
           <div className="px-3 flex items-center gap-3">
-            <h2 className=" font-semibold text-3xl">Payment Method <span className="text-red-600">*</span> :</h2>
+            <h2 className=" font-semibold text-3xl">
+              Payment Method <span className="text-red-600">*</span> :
+            </h2>
             <select
               value={paymentMethod}
               required
               className="w-fit p-2 border border-[#eaeaea] rounded-[8px] focus:outline-none"
               onChange={(e) => {
                 setPaymentMethod(e.target.value);
-                
               }}
             >
               <option value="">Select payment method</option>

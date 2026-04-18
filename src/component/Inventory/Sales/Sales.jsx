@@ -15,12 +15,12 @@ export default function Sales() {
     <div>
       <h3 className="text-3xl font-medium my-4 ">Record Sales</h3>
 
-      <div className="grid grid-cols-[45px_1fr_100px_100px_190px_190px_70px]  items-center  bg-[#E8EFF9]  rounded-tr-lg rounded-tl-lg">
+      <div className="grid grid-cols-[45px_1fr_100px_120px_190px_190px_70px]  items-center  bg-[#E8EFF9]  rounded-tr-lg rounded-tl-lg">
         {[
           "S/N",
           "Product",
-          "Quantity Left",
           "Quantity",
+          "Quantity Left",
           "Selling Price",
           "Amount",
           "Action",
@@ -31,25 +31,6 @@ export default function Sales() {
             </div>
           );
         })}
-        {/* <div className="p-[10px] text-[14px] font-bold relative flex items-center gap-4">
-          {showCategoryForm && (
-            <CategoryForm setShowCategoryForm={setShowCategoryForm} />
-          )}
-          Category{" "}
-          <span
-            className="text-blue-500 text-sm hover:underline cursor-pointer animate-pulse"
-            onClick={() => setShowCategoryForm(true)}
-          >
-            Add Category
-          </span>
-        </div>
-        {["Supplier", "Product Image", "Action"].map((item, index) => {
-          return (
-            <div key={index} className="p-[10px] text-[14px] font-bold">
-              {item}
-            </div>
-          );
-        })} */}
       </div>
       <SalesForm />
     </div>
