@@ -24,18 +24,19 @@ export const createSalesRecord = async (salesData) => {
 
 
 export const updateProductQty = (items) => {
+  return Promise.all(
+    items.map(async (item) => {
+      const { product_id, quantity_left } = item;
+      const { error } = await supabase
+        .from("products")
+        .update({ quantity_left })
+        .eq("id", product_id)
+        .select();
 
-  items.map(async (items) => {
-    const { product_id, quantity_left } = items;
-    const { data, error } = await supabase
-      .from("products")
-      .update({ quantity_left: quantity_left })
-      .eq("id", product_id)
-      .select();
-    
-    if( error) {
-      throw error;
-    }
-  });
+      if (error) {
+        throw error;
+      }
+    }),
+  );
 
 };

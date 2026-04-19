@@ -1,13 +1,15 @@
-import React from 'react'
+import React from 'react';
 import { TrashIcon } from '@phosphor-icons/react';
-import { useState } from 'react'
+import { useState } from 'react';
+import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 import useAlter from '../../../hooks/useAlter';
 import useFetch from '../../../hooks/useFetch';
 import { toast } from 'react-toastify';
-import { getAllSuppliers } from '../Supplier/supplierAPI';
 import { getAllProducts } from '../Product/productAPI';
 import { createItems, createSalesRecord, updateProductQty } from './salesAPI';
 import SalesReceipt from './SalesReceipt';
+import Overlay from '../../../ui/Overlay';
+import ConfirmationModal from '../../../ui/ConfirmationModal';
 
 const emptyItem = {
   product_id: "",
@@ -23,12 +25,11 @@ export default function SalesForm() {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [productQuery, setProductQuery] = useState("");
   const [activeRowIndex, setActiveRowIndex] = useState(null);
+  const [receiptData, setReceiptData] = useState(null);
+  const [showReceiptPrompt, setShowReceiptPrompt] = useState(false);
+  const [showReceiptPreview, setShowReceiptPreview] = useState(false);
 
-    const {
-      data: products,
-      isPending,
-      error,
-    } = useFetch({
+  const { data: products } = useFetch({
       queryFn: getAllProducts,
       key: ["products", productQuery],
     });
@@ -57,53 +58,44 @@ export default function SalesForm() {
   const reduceItemsQty = useAlter({
     mutationFn: updateProductQty,
     key: "products",
-    onSuccessCallback: () => {
-      toast.success("Sale recorded successfully!");
-      setItems([{ ...emptyItem }]);
-      setCustomerName("");
-      setPaymentMethod("");
-    },
   });
   
   const createSalesMutation = useAlter({
     mutationFn: createItems,
     key: "sales_items",
-    onSuccessCallback: () => {
-      reduceItemsQty.mutate(
-        items.map((item) => {
-          const matchedProduct = (products ?? []).find(
-            (p) => p.id === item.product_id,
-          );
-
-          return {
-            product_id: item.product_id,
-            quantity_left:
-              (Number(matchedProduct?.quantity_left) || 0) -
-              (Number(item.quantity) || 0),
-          };
-        }),
-      );
-    }
-
   });
   
   const createSalesRecordMutation = useAlter({
     mutationFn: createSalesRecord,
     key: "sales_record",
-    onSuccessCallback: (data) => {
-      const salesItemsData = items.map((item) => ({
-        product_id: item.product_id,
-        quantity: Number(item.quantity),
-        unit_price_at_sale: Number(item.unit_price_sale),
-        sales_record_id: data[0].id,
-      }));
+  });
 
-      createSalesMutation.mutate(salesItemsData);
+  const resetSaleForm = () => {
+    setItems([{ ...emptyItem }]);
+    setCustomerName("");
+    setPaymentMethod("");
+    setProductQuery("");
+    setActiveRowIndex(null);
+    setReceiptData(null);
+    setShowReceiptPrompt(false);
+    setShowReceiptPreview(false);
+  };
+
+  const handleReceiptConfirm = () => {
+    if (!receiptData) {
+      resetSaleForm();
+      return;
     }
 
-  });
+    setShowReceiptPrompt(false);
+    setShowReceiptPreview(true);
+  };
+
+  const handleReceiptCancel = () => {
+    resetSaleForm();
+  };
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const salesData = {
@@ -111,15 +103,62 @@ export default function SalesForm() {
       payment_method: paymentMethod,
       total_amount: grandTotal,
     };
-      createSalesRecordMutation.mutate(salesData);
+
+    try {
+      const salesRecordResponse = await createSalesRecordMutation.mutateAsync(salesData);
+      const savedSalesRecord = salesRecordResponse?.[0];
+
+      if (!savedSalesRecord) {
+        throw new Error("Sales record was not created.");
+      }
+
+      const salesItemsData = items.map((item) => ({
+        product_id: item.product_id,
+        quantity: Number(item.quantity),
+        unit_price_at_sale: Number(item.unit_price_sale),
+        sales_record_id: savedSalesRecord.id,
+      }));
+
+      await createSalesMutation.mutateAsync(salesItemsData);
+
+      const updatedProducts = items.map((item) => {
+        const matchedProduct = (products ?? []).find(
+          (product) => product.id === item.product_id,
+        );
+
+        return {
+          product_id: item.product_id,
+          quantity_left:
+            (Number(matchedProduct?.quantity_left) || 0) -
+            (Number(item.quantity) || 0),
+        };
+      });
+
+      await reduceItemsQty.mutateAsync(updatedProducts);
+
+      setReceiptData({
+        salesRecord: savedSalesRecord,
+        items: items.map((item) => ({
+          name: item.name,
+          quantity: Number(item.quantity),
+          unit_price_at_sale: Number(item.unit_price_sale),
+        })),
+        customerName: customerName.trim() || "Walk-in Customer",
+        paymentMethod,
+        grandTotal,
+      });
+      setShowReceiptPrompt(true);
+      toast.success("Sale recorded successfully!");
+    } catch (error) {
+      toast.error(error?.message || "Failed to save sale.");
+    }
   };
 
-  const handleGenerateReceipt = () => {
-    
-  }
+    const receiptFileName = `sales-receipt-${receiptData?.salesRecord?.id ?? Date.now()}.pdf`;
   
   return (
-    <form onSubmit={(e) => handleSubmit(e)}>
+    <>
+    <form onSubmit={handleSubmit}>
       {items.map((product, i) => (
         <div
           key={i}
@@ -273,13 +312,6 @@ export default function SalesForm() {
         >
           Add Row
         </button>
-        {grandTotal> 0 && paymentMethod && <button
-          type="button"
-          className="bg-blue-500 cursor-pointer w-fit text-white py-2 px-4 rounded-[8px] hover:bg-blue-700"
-          onClick={()=>handleGenerateReceipt}
-        >
-          Generate Receipt
-        </button>}
         <button
           type="submit"
           className="bg-green-500 cursor-pointer w-[100px] text-white py-2 px-4 rounded-[8px] hover:bg-green-700"
@@ -288,6 +320,50 @@ export default function SalesForm() {
         </button>
       </div>
     </form>
+    {showReceiptPrompt && (
+      <Overlay>
+        <ConfirmationModal
+          message="Sale saved successfully. Do you want to generate the receipt PDF now?"
+          confirmText="Generate Receipt"
+          cancelText="No, Thanks"
+          onConfirm={handleReceiptConfirm}
+          onCancel={handleReceiptCancel}
+        />
+      </Overlay>
+    )}
+    {showReceiptPreview && receiptData && (
+      <Overlay>
+        <div className="bg-white rounded-2xl w-[95vw] max-w-5xl h-[90vh] flex flex-col overflow-hidden">
+          <header className="bg-blue-500 text-white px-5 py-3 text-2xl font-medium">
+            Receipt Preview
+          </header>
+
+          <div className="flex-1 bg-slate-100 p-4">
+            <PDFViewer className="w-full h-full border border-[#eaeaea] rounded-lg">
+              <SalesReceipt receiptData={receiptData} />
+            </PDFViewer>
+          </div>
+
+          <div className="flex items-center justify-end gap-3 p-4 border-t border-t-[#eaeaea]">
+            <button
+              type="button"
+              className="bg-gray-500 cursor-pointer text-white py-2 px-4 rounded-[8px] hover:bg-gray-600"
+              onClick={resetSaleForm}
+            >
+              Close
+            </button>
+            <PDFDownloadLink
+              document={<SalesReceipt receiptData={receiptData} />}
+              fileName={receiptFileName}
+              className="bg-green-600 cursor-pointer text-white py-2 px-4 rounded-[8px] hover:bg-green-700"
+            >
+              {({ loading }) => (loading ? 'Preparing PDF...' : 'Download PDF')}
+            </PDFDownloadLink>
+          </div>
+        </div>
+      </Overlay>
+    )}
+    </>
   );
 }
 
