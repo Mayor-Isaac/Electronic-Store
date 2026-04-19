@@ -23,7 +23,10 @@ export default function Report() {
     key: "orderRecords",
   });
 
-  const paidOrders = orderRecords?.filter((order) => order.status === "delivered") || [];
+  const paidOrders =
+    orderRecords?.filter(
+      (order) => order.status === "delivered" || order.status === "pending",
+    ) || [];
 
   const concatenatedRecords = salesRecords && paidOrders && [...salesRecords, ...paidOrders];
 
