@@ -52,7 +52,8 @@ export default function Report() {
     sortedRecords && searchTerm === ""
       ? sortedRecords
       : sortedRecords?.filter((record) =>
-          record.customer_name.toLowerCase().includes(searchTerm.toLowerCase()),
+          record.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          record.id.toLowerCase().includes(searchTerm.toLowerCase()),
       );
 
 
@@ -63,8 +64,8 @@ export default function Report() {
           <h2 className="font-bold text-3xl">Sales Report</h2>
           <input
             type="text"
-            placeholder="Search customer name...."
-            className="focus:outline-none border border-[#eaeaea] rounded-[8px] py-2 px-3 "
+            placeholder="Search customer name or receipt id...."
+            className="focus:outline-none border border-[#eaeaea] w-[300px] rounded-[8px] py-2 px-3 "
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
