@@ -1,5 +1,5 @@
-import { TrashIcon } from '@phosphor-icons/react';
 import React from 'react'
+import { TrashIcon } from '@phosphor-icons/react';
 import { useState } from 'react'
 import useAlter from '../../../hooks/useAlter';
 import useFetch from '../../../hooks/useFetch';
@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { getAllSuppliers } from '../Supplier/supplierAPI';
 import { getAllProducts } from '../Product/productAPI';
 import { createItems, createSalesRecord, updateProductQty } from './salesAPI';
+import SalesReceipt from './SalesReceipt';
 
 const emptyItem = {
   product_id: "",
@@ -112,6 +113,10 @@ export default function SalesForm() {
     };
       createSalesRecordMutation.mutate(salesData);
   };
+
+  const handleGenerateReceipt = () => {
+    
+  }
   
   return (
     <form onSubmit={(e) => handleSubmit(e)}>
@@ -268,12 +273,13 @@ export default function SalesForm() {
         >
           Add Row
         </button>
-        <button
+        {grandTotal> 0 && paymentMethod && <button
           type="button"
           className="bg-blue-500 cursor-pointer w-fit text-white py-2 px-4 rounded-[8px] hover:bg-blue-700"
+          onClick={()=>handleGenerateReceipt}
         >
           Generate Receipt
-        </button>
+        </button>}
         <button
           type="submit"
           className="bg-green-500 cursor-pointer w-[100px] text-white py-2 px-4 rounded-[8px] hover:bg-green-700"
