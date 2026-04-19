@@ -5,7 +5,7 @@ import EmptyTable from '../../../ui/EmptyTable';
 import OrderRow from './OrderRow';
 import useFetch from '../../../hooks/useFetch';
 import { getOrderRecord } from './orderAPI';
-import Spinner from '../../../ui/Spinner';
+import Loader from '../../../ui/Loader';
 
 export default function Order() {
     const [searchTerm, setSearchTerm] = useState("")
@@ -182,7 +182,7 @@ export default function Order() {
           })}
         </div>
         {isPending ? (
-          <Spinner />
+          <Loader />
         ) : error ? (
           <div className="text-center text-red-500 py-4">
             Error fetching order data

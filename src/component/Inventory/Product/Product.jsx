@@ -2,7 +2,7 @@ import React from 'react'
 import Overlay from '../../../ui/Overlay'
 import BlueButton from '../../../ui/BlueButton';
 import EmptyTable from '../../../ui/EmptyTable';
-import Spinner from '../../../ui/Spinner';
+import Loader from '../../../ui/Loader';
 import useFetch from '../../../hooks/useFetch';
 import { toast } from 'react-toastify';
 import { XIcon } from '@phosphor-icons/react';
@@ -100,7 +100,7 @@ export default function Products() {
 
 
         {isPending ? (
-        <Spinner />
+        <Loader />
         ) : products.length === 0 ? (
           <EmptyTable
             info="No products found"

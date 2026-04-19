@@ -1,7 +1,7 @@
 import React from 'react';
 import { TrashIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
-import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
+import { pdf } from '@react-pdf/renderer';
 import useAlter from '../../../hooks/useAlter';
 import useFetch from '../../../hooks/useFetch';
 import { toast } from 'react-toastify';
@@ -27,7 +27,6 @@ export default function SalesForm() {
   const [activeRowIndex, setActiveRowIndex] = useState(null);
   const [receiptData, setReceiptData] = useState(null);
   const [showReceiptPrompt, setShowReceiptPrompt] = useState(false);
-  const [showReceiptPreview, setShowReceiptPreview] = useState(false);
 
   const { data: products } = useFetch({
       queryFn: getAllProducts,
@@ -78,17 +77,39 @@ export default function SalesForm() {
     setActiveRowIndex(null);
     setReceiptData(null);
     setShowReceiptPrompt(false);
-    setShowReceiptPreview(false);
   };
 
-  const handleReceiptConfirm = () => {
+  const downloadReceiptPdf = async (data) => {
+    const blob = await pdf(<SalesReceipt receiptData={data} />).toBlob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `sales-receipt-${data?.salesRecord?.id.slice(0, 13) ?? Date.now()}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 1000);
+  };
+
+  const handleReceiptConfirm = async () => {
     if (!receiptData) {
       resetSaleForm();
       return;
     }
 
-    setShowReceiptPrompt(false);
-    setShowReceiptPreview(true);
+    try {
+      await downloadReceiptPdf(receiptData);
+      toast.success('Receipt PDF downloaded.');
+    } catch (error) {
+      toast.error(error?.message || 'Unable to generate receipt PDF.');
+      return;
+    }
+
+    resetSaleForm();
   };
 
   const handleReceiptCancel = () => {
@@ -154,8 +175,6 @@ export default function SalesForm() {
     }
   };
 
-    const receiptFileName = `sales-receipt-${receiptData?.salesRecord?.id ?? Date.now()}.pdf`;
-  
   return (
     <>
     <form onSubmit={handleSubmit}>
@@ -329,38 +348,6 @@ export default function SalesForm() {
           onConfirm={handleReceiptConfirm}
           onCancel={handleReceiptCancel}
         />
-      </Overlay>
-    )}
-    {showReceiptPreview && receiptData && (
-      <Overlay>
-        <div className="bg-white rounded-2xl w-[95vw] max-w-5xl h-[90vh] flex flex-col overflow-hidden">
-          <header className="bg-blue-500 text-white px-5 py-3 text-2xl font-medium">
-            Receipt Preview
-          </header>
-
-          <div className="flex-1 bg-slate-100 p-4">
-            <PDFViewer className="w-full h-full border border-[#eaeaea] rounded-lg">
-              <SalesReceipt receiptData={receiptData} />
-            </PDFViewer>
-          </div>
-
-          <div className="flex items-center justify-end gap-3 p-4 border-t border-t-[#eaeaea]">
-            <button
-              type="button"
-              className="bg-gray-500 cursor-pointer text-white py-2 px-4 rounded-[8px] hover:bg-gray-600"
-              onClick={resetSaleForm}
-            >
-              Close
-            </button>
-            <PDFDownloadLink
-              document={<SalesReceipt receiptData={receiptData} />}
-              fileName={receiptFileName}
-              className="bg-green-600 cursor-pointer text-white py-2 px-4 rounded-[8px] hover:bg-green-700"
-            >
-              {({ loading }) => (loading ? 'Preparing PDF...' : 'Download PDF')}
-            </PDFDownloadLink>
-          </div>
-        </div>
       </Overlay>
     )}
     </>

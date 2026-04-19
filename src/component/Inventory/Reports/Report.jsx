@@ -2,7 +2,7 @@ import React from "react";
 import useFetch from "../../../hooks/useFetch";
 import { getAllSalesRecords } from "./reportsAPI";
 import EmptyTable from "../../../ui/EmptyTable";
-import Spinner from "../../../ui/Spinner";
+import Loader from "../../../ui/Loader";
 import ReportRow from "./ReportRow";
 import { XIcon } from "@phosphor-icons/react";
 import { getOrderRecord } from "../../OrderCart/Order/orderAPI";
@@ -136,7 +136,7 @@ export default function Report() {
           )}
         </div>
         {isLoading ? (
-          <Spinner />
+          <Loader />
         ) : searchedRecords.length === 0 ? (
           <EmptyTable
             info="No record found"

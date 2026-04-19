@@ -2,7 +2,7 @@ import React from 'react'
 import Overlay from '../../../ui/Overlay'
 import BlueButton from '../../../ui/BlueButton';
 import EmptyTable from '../../../ui/EmptyTable';
-import Spinner from '../../../ui/Spinner';
+import Loader from '../../../ui/Loader';
 import SupplierRow from './SupplierRow';
 import AddSupplierForm from './AddSupplierForm';
 import useFetch from '../../../hooks/useFetch';
@@ -87,7 +87,7 @@ export default function Supplier() {
         </div>
 
         {isPending ? (
-          <Spinner />
+          <Loader />
         ) : suppliers.length === 0 ? (
           <EmptyTable
             info="No suppliers found"

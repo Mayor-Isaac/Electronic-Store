@@ -23,3 +23,6 @@ body{
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+.animate-logo{
+  animation: spin 1.5s linear infinite;
+}
