@@ -24,5 +24,15 @@ body{
   -webkit-text-fill-color: transparent;
 }
 .animate-logo{
-  animation: spin 1.5s linear infinite;
+  animation: zoomInOut 1.5s ease-in-out infinite;
+}
+
+@keyframes zoomInOut {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
 }

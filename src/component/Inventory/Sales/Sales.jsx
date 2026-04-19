@@ -1,6 +1,5 @@
 import React from 'react'
 import SalesForm from './SalesForm';
-import Loader from '../../../ui/Loader';
 
 export default function Sales() {
   
@@ -8,9 +7,7 @@ export default function Sales() {
     <div>
       <h3 className="text-3xl font-medium my-4 ">Record Sales</h3>
 
-      <Loader />
-
-      {/* <div className="grid grid-cols-[45px_1fr_100px_120px_190px_190px_70px]  items-center  bg-[#E8EFF9]  rounded-tr-lg rounded-tl-lg">
+      <div className="grid grid-cols-[45px_1fr_100px_120px_190px_190px_70px]  items-center  bg-[#E8EFF9]  rounded-tr-lg rounded-tl-lg">
         {[
           "S/N",
           "Product",
@@ -27,7 +24,7 @@ export default function Sales() {
           );
         })}
       </div>
-      <SalesForm /> */}
+      <SalesForm />
     </div>
   );
 }
