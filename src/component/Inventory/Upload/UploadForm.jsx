@@ -6,6 +6,8 @@ import useFetch from '../../../hooks/useFetch';
 import { createProduct, getAllCategories, uploadProductImage } from './uploadAPI';
 import { toast } from 'react-toastify';
 import { getAllSuppliers } from '../Supplier/supplierAPI';
+import { useRef } from 'react';
+import * as XLSX from "xlsx";
 
 const emptyProduct = {
   name: "",
@@ -84,6 +86,42 @@ export default function UploadForm() {
     } catch (err) {
       toast.error("Upload failed: " + err.message);
     }
+  };
+
+  // Excel upload handling
+  const fileInputRef = useRef(null);
+
+  const triggerFileSelect = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = (evt) => {
+      const bstr = evt.target.result;
+      const wb = XLSX.read(bstr, { type: "binary" });
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+
+      // Convert to JSON
+      const data = XLSX.utils.sheet_to_json(ws);
+
+      // Mapping Excel headers to your state keys
+      const formattedData = data.map((row) => ({
+        name: row["Name"],
+        description: row["Description"],
+        stock_quantity: row["Stock Qty"],
+        cost_price: row["Cost Price"],
+        selling_price: row["Selling Price"],
+      }));
+
+      setProducts(formattedData);
+    };
+
+    // reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
   };
   
   return (
@@ -179,7 +217,7 @@ export default function UploadForm() {
               </option>
             )}
             {uniqueCategories.map((category) => (
-              <option  key={category.id} value={category.name}>
+              <option key={category.id} value={category.name}>
                 {category.name}
               </option>
             ))}
@@ -244,6 +282,24 @@ export default function UploadForm() {
       ))}
 
       <div className="flex items-center justify-end m-5 gap-5">
+        <div>
+          <button
+            type="button"
+            onClick={triggerFileSelect}
+            className="bg-gray-500 cursor-pointer w-fit text-white py-2 px-4 rounded-[8px] hover:bg-gray-700"
+          >
+            Upload Excel File
+          </button>
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileUpload}
+            accept=".xlsx, .xls, .csv"
+            className="hidden"
+          />
+        </div>
+
         <button
           type="button"
           onClick={() => setProducts([...products, { ...emptyProduct }])}
