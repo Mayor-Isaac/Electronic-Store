@@ -158,7 +158,7 @@ export default function Order() {
             );
           })}
         </div>
-        <div className="grid grid-cols-[220px_235px_170px_1fr_100px_100px_100px_150px_110px_75px] items-center border-b-2 border-t border-t-[#eaeaea]">
+        <div className="grid grid-cols-[220px_235px_170px_1fr_130px_70px_140px_150px_110px_75px] items-center border-b-2 border-t border-t-[#eaeaea]">
           {[
             "",
             "",

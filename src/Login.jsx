@@ -3,6 +3,7 @@ import { supabase } from "./lib/supabaseClient";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
+import Loader from "./ui/Loader";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -31,11 +32,15 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-100">
-      <form
-        onSubmit={handleLogin}
-        className="p-8 bg-white shadow-md rounded-lg flex flex-col gap-4"
-      >
-        <h2 className="text-xl font-bold">Login</h2>
+      {loading? <Loader /> : (
+        <form
+          onSubmit={handleLogin}
+          className="p-8 bg-white shadow-md rounded-lg flex flex-col gap-4"
+        >
+          <div className="flex items-center gap-6">
+            <img src="/assets/logo.jpg" alt="" className="w-20 h-20" />
+          <h2 className="text-3xl font-bold">Login</h2>
+        </div>
         <input
           type="email"
           placeholder="Email"
@@ -65,7 +70,7 @@ export default function Login() {
         >
           {loading ? "Logging in..." : "Login"}
         </button>
-      </form>
+      </form>)}
     </div>
   );
 }
