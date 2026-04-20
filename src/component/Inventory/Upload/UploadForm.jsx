@@ -115,6 +115,10 @@ export default function UploadForm() {
         stock_quantity: row["Stock Qty"],
         cost_price: row["Cost Price"],
         selling_price: row["Selling Price"],
+        category: "",
+        supplier_id: "",
+        image_name: "",
+        image_file: null,
       }));
 
       setProducts(formattedData);
