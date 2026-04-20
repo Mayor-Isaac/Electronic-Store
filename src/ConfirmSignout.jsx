@@ -21,7 +21,7 @@ export default function ConfirmSignout({ setShowSignout }) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-6 shadow-[0_0_12px_rgba(0,0,0,0.12)] rounded-[10px] w-fit p-6 absolute -top-1 bg-white/92 right-3">
+    <div className="flex flex-col items-center gap-6 shadow-[0_0_12px_rgba(0,0,0,0.12)] z-50 rounded-[10px] w-fit p-6 absolute top-25 bg-white/92 right-3">
       <h3>Are you sure you want to sign out?</h3>
       <div className="flex items-center gap-4">
         <RedBtn onClick={confirmSignOut} text="Yes, I'm sure" />
