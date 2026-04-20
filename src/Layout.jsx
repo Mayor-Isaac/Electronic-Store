@@ -35,7 +35,7 @@ export default function Layout() {
         <Outlet />
       </div>
       <p className="text-center flex items-center justify-center gap-2">
-        <span className="brand">Tronix</span>{" "}
+        <span className="brand">Bloomtronics</span>{" "}
         <span className="text-[11px]">
           store &copy; {new Date().getFullYear()}
         </span>

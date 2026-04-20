@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   watermarkImage: {
     width: "100%",
     height: "100%",
-    objectFit: "cover",
+    objectFit: "contain",
   },
   header: {
     flexDirection: "column",
@@ -144,13 +144,13 @@ export default function SalesReceipt({ receiptData }) {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.watermark}>
-          <Image src="/assets/logo.jpg" style={styles.watermarkImage} />
+          <Image src="/assets/loading-logo.jpg" style={styles.watermarkImage} />
         </View>
 
         <View style={styles.imageSection}>
-          <Image src="/assets/logo.jpg" style={{width: 80, height: 60}} />
+          <Image src="/assets/logo.jpg" style={{ width: 60, height: 60 }} />
           <View style={styles.header}>
-            <Text style={styles.title}>Component Receipt</Text>
+            <Text style={styles.title}>Bloomtronics Component Receipt</Text>
             <Text style={styles.subtitle}>
               Sale receipt generated from the POS system
             </Text>
@@ -159,7 +159,7 @@ export default function SalesReceipt({ receiptData }) {
 
         <View style={styles.section}>
           <View style={styles.metaRow}>
-            <Text>Receipt No: {salesRecord?.id.slice(0,13) ?? "-"}</Text>
+            <Text>Receipt No: {salesRecord?.id.slice(0, 13) ?? "-"}</Text>
             <Text>
               {formatDate(salesRecord?.created_at ?? new Date().toISOString())}
             </Text>
