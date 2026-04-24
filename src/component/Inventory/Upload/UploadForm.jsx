@@ -110,11 +110,15 @@ export default function UploadForm() {
 
       // Mapping Excel headers to your state keys
       const formattedData = data.map((row) => ({
-        name: row["Name"],
-        description: row["Description"],
-        stock_quantity: row["Stock Qty"],
-        cost_price: row["Cost Price"],
-        selling_price: row["Selling Price"],
+        name: row["Name"] || row["Product Name"],
+        stock_qty:
+          row["Stock Qty"] ||
+          row["Stock Quantity"] ||
+          row["Quantity"] ||
+          row["Qty"] ||
+          0,
+        cost_price: row["Cost Price"] || row["Cost"] || 0,
+        selling_price: row["Selling Price"] || row["Price"] || 0,
         category: "",
         supplier_id: "",
         image_name: "",

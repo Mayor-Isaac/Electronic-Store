@@ -1,4 +1,6 @@
 import React from 'react'
+import Order from '../component/OrderCart/Order/Order';
+import Cart from '../component/OrderCart/Cart/Cart';
 // import ComingSoon from '../ui/ComingSoon';
 
 const tabs = ["order", "cart"];
