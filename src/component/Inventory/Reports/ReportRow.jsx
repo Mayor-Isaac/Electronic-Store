@@ -12,8 +12,7 @@ export default function ReportRow({ reportData }) {
       created_at: date,
       total_amount: amount,
       payment_method: method,
-      status,
-      amount_paid
+      record_type: status,
     } = reportData;
     const {
     data: products,
@@ -38,7 +37,13 @@ export default function ReportRow({ reportData }) {
       </div>
       <div className="p-[10px] flex gap-2 text-[14px] border-r border-r-[#eaeaea]">
         <span className=" capitalize truncate">{name}</span>
-        {status && <ShoppingCartIcon size={19} weight="fill" className='text-green-500 animate-pulse' />}
+        {status !== "Sale" && (
+          <ShoppingCartIcon
+            size={19}
+            weight="fill"
+            className="text-green-500 animate-pulse"
+          />
+        )}
       </div>
       <div className="text-[14px]">
         <div className="flex flex-col">
@@ -69,7 +74,7 @@ export default function ReportRow({ reportData }) {
         </div>
       </div>
       <div className="p-[10px] text-[14px] border-r border-r-[#eaeaea] font-bold">
-        {formatCurrency(status ? amount_paid : amount)}
+        {formatCurrency(amount)}
       </div>
       <div className="p-[10px] text-[14px] capitalize">
         {method || "Paystack"}

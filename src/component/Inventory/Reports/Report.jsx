@@ -1,36 +1,35 @@
 import React from "react";
 import useFetch from "../../../hooks/useFetch";
-import { getAllSalesRecords } from "./reportsAPI";
+import { getAllReports } from "./reportsAPI";
 import EmptyTable from "../../../ui/EmptyTable";
 import Loader from "../../../ui/Loader";
 import ReportRow from "./ReportRow";
 import { XIcon } from "@phosphor-icons/react";
-import { getOrderRecord } from "../../OrderCart/Order/orderAPI";
+import Pagination from "../../../ui/Pagination";
 
 export default function Report() {
 
     const [searchTerm, setSearchTerm] = React.useState("");
     const [filterOption, setFilterOption] = React.useState("all");
-    const [sortOption, setSortOption] = React.useState("created_at");
+  const [sortOption, setSortOption] = React.useState("created_at");
+  const [page, setPage] = React.useState(0);
 
-  const { data: salesRecords, isPending: isLoading } = useFetch({
-    queryFn: getAllSalesRecords,
-    key: "salesRecords",
+  const { data, isPending: isLoading } = useFetch({
+    queryFn: () => getAllReports(page),
+    key: [  "reports", page],
   });
 
-  const { data: orderRecords, isPending: isOrderLoading } = useFetch({
-    queryFn: getOrderRecord,
-    key: "orderRecords",
-  });
+  const {data: reports, count: totalCount} = data || {};
 
-  const paidOrders =
-    orderRecords?.filter(
-      (order) => order.status === "delivered" || order.status === "pending",
-    ) || [];
+  console.log("report ===>", reports);
+  console.log("totalCount ===>", totalCount);
 
-  const concatenatedRecords = salesRecords && paidOrders && [...salesRecords, ...paidOrders];
-
-  const filteredRecords = filterOption === "all" ? concatenatedRecords : filterOption === "walk-in" ? salesRecords : paidOrders;
+  const filteredRecords =
+    filterOption === "all"
+      ? reports
+      : filterOption === "walk-in"
+        ? reports.filter((report) => report.record_type === "Sale")
+        : reports.filter((report) => report.record_type === "Order");
 
   const sortedRecords = filteredRecords && [...filteredRecords]?.sort((a, b) => {
     if (sortOption === "name") {
@@ -142,7 +141,7 @@ export default function Report() {
           <EmptyTable
             info="No record found"
             instruction={
-              salesRecords.length !== 0
+              reports.length !== 0
                 ? "Try adjusting your search or filter to find what you're looking for."
                 : "Make sales to generate report"
             }
@@ -153,6 +152,9 @@ export default function Report() {
           ))
         )}
       </div>
+      {/* Pagination Controls */}
+      <Pagination setPage={setPage} page={page} totalCount={totalCount} />
+
     </div>
   );
 }
