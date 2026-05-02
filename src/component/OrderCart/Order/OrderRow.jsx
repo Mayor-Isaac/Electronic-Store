@@ -14,7 +14,7 @@ export default function OrderRow({ data }) {
             created_at: dateOrdered,
             customer_name: customerName,
             status,
-    amount_paid: amountPaid } = data
+    total_amount: amountPaid } = data
   
   const { data: products } = useFetch({
         queryFn: getAllProducts,

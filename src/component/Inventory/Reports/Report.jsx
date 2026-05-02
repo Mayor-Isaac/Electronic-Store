@@ -153,7 +153,7 @@ export default function Report() {
         )}
       </div>
       {/* Pagination Controls */}
-      <Pagination setPage={setPage} page={page} totalCount={totalCount} />
+      {data && <Pagination setPage={setPage} page={page} totalCount={totalCount} />}
 
     </div>
   );
