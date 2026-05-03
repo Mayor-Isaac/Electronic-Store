@@ -21,9 +21,6 @@ export default function Report() {
 
   const {data: reports, count: totalCount} = data || {};
 
-  console.log("report ===>", reports);
-  console.log("totalCount ===>", totalCount);
-
   const filteredRecords =
     filterOption === "all"
       ? reports

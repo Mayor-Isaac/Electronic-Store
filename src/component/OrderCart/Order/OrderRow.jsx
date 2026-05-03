@@ -40,8 +40,6 @@ export default function OrderRow({ data }) {
     (item) => item.sales_record_id === orderId,
   );
 
-  console.log("data=============>", data);
-
   return (
     <div className="grid grid-cols-[220px_235px_170px_1fr_150px_110px_75px] border-b-2">
       <div className="p-[10px] text-[14px] border-r truncate border-r-[#eaeaea]">
