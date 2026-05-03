@@ -1,12 +1,12 @@
 import { DotsThreeVerticalIcon, EnvelopeIcon, PhoneCallIcon } from '@phosphor-icons/react';
 import React from 'react'
 import { getTimeDiff } from '../../../utils/getTimeDiff';
+import formatCurrency from '../../../utils/formatCurrency';
 
 export default function CartRow({ cartData }) {
     const [showMenu, setShowMenu] = React.useState(false);
-    console.log("cartData ===>", cartData);
     const {
-      id,
+      cart_contents: items,
       customer_name: customerName,
       phone_num: phoneNumber,
       email,
@@ -15,9 +15,27 @@ export default function CartRow({ cartData }) {
       total_items_count: numberOfItems,
     } = cartData;
   return (
-    <div className="grid grid-cols-[235px_200px_1fr_190px_140px_80px]  items-center">
+    <div className="grid grid-cols-[235px_200px_1fr_190px_140px_80px] border-b-2 ">
       <h3 className="p-[10px] text-[14px]">{customerName}</h3>
       <h3 className="p-[10px] text-[14px]">{getTimeDiff(dateModified)}</h3>
+      {/* Carts Items */}
+          <div className="py-[10px] flex flex-col gap-4 text-[14px]">
+              {items.map((item, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className="grid grid-cols-[1fr_180px] items-center"
+                    >
+                      <h1 className="px-[10px]">{item.name}</h1>
+                      <h1 className="px-2.5 font-bold">{item.qty}</h1>
+                    </div>
+                  );
+              })}
+      </div>
+      <p className="p-[10px] text-[14px] font-bold">
+        {formatCurrency(cartValue)}
+      </p>
+      <p className="p-[10px] text-[14px]">{numberOfItems}</p>
       <div className="p-[10px] text-[14px] flex items-start justify-center">
         <div className="relative inline-flex">
           <button
