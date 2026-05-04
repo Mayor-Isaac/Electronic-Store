@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ListBulletsIcon,
   ListNumbersIcon,
@@ -30,6 +31,7 @@ const ToolbarButton = ({ active, label, icon: Icon, ...props }) => (
     type="button"
     aria-pressed={active}
     title={label}
+    onMouseDown={(event) => event.preventDefault()}
     className={`inline-flex h-10 w-10 items-center justify-center rounded-md border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 ${
       active
         ? "border-slate-900 bg-slate-900 text-white shadow-sm"
@@ -43,6 +45,8 @@ const ToolbarButton = ({ active, label, icon: Icon, ...props }) => (
 );
 
 const BlogEditor = ({ onChange, content }) => {
+  const [pressedControl, setPressedControl] = useState("");
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -70,6 +74,38 @@ const BlogEditor = ({ onChange, content }) => {
   const canUndo = editor?.can().chain().focus().undo().run() ?? false;
   const canRedo = editor?.can().chain().focus().redo().run() ?? false;
 
+  const setControlAndRun = (controlName, command, checkActive) => {
+    // show immediate pressed UI
+    setPressedControl(controlName);
+    // run the command (synchronous)
+    command();
+
+    // determine real active state after command and sync UI
+    // run in next microtask to allow tiptap to update
+    setTimeout(() => {
+      const active = typeof checkActive === "function" ? checkActive() : false;
+      if (!active) setPressedControl("");
+    }, 0);
+  };
+
+  const isPressed = (controlName, editorActive) =>
+    pressedControl === controlName || editorActive;
+
+  const getTextAlign = (node = "paragraph") => {
+    try {
+      return editor?.getAttributes(node)?.textAlign ?? null;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const checkTextAlign = (align) => {
+    if (!editor) return false;
+    const p = getTextAlign("paragraph");
+    const h = getTextAlign("heading");
+    return p === align || h === align;
+  };
+
   return (
     <div className="w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
       <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 bg-slate-50 p-3">
@@ -77,38 +113,38 @@ const BlogEditor = ({ onChange, content }) => {
           <ToolbarButton
             icon={TextBIcon}
             label="Bold"
-            active={editor?.isActive("bold")}
-            onClick={() => editor?.chain().focus().toggleBold().run()}
+            active={isPressed("bold", editor?.isActive("bold"))}
+            onClick={() => setControlAndRun("bold", () => editor?.chain().focus().toggleBold().run(), () => editor?.isActive("bold"))}
           />
           <ToolbarButton
             icon={TextItalicIcon}
             label="Italic"
-            active={editor?.isActive("italic")}
-            onClick={() => editor?.chain().focus().toggleItalic().run()}
+            active={isPressed("italic", editor?.isActive("italic"))}
+            onClick={() => setControlAndRun("italic", () => editor?.chain().focus().toggleItalic().run(), () => editor?.isActive("italic"))}
           />
           <ToolbarButton
             icon={TextUnderlineIcon}
             label="Underline"
-            active={editor?.isActive("underline")}
-            onClick={() => editor?.chain().focus().toggleUnderline().run()}
+            active={isPressed("underline", editor?.isActive("underline"))}
+            onClick={() => setControlAndRun("underline", () => editor?.chain().focus().toggleUnderline().run(), () => editor?.isActive("underline"))}
           />
           <ToolbarButton
             icon={TextStrikethroughIcon}
             label="Strikethrough"
-            active={editor?.isActive("strike")}
-            onClick={() => editor?.chain().focus().toggleStrike().run()}
+            active={isPressed("strike", editor?.isActive("strike"))}
+            onClick={() => setControlAndRun("strike", () => editor?.chain().focus().toggleStrike().run(), () => editor?.isActive("strike"))}
           />
           <ToolbarButton
             icon={TextSubscriptIcon}
             label="Subscript"
-            active={editor?.isActive("subscript")}
-            onClick={() => editor?.chain().focus().toggleSubscript().run()}
+            active={isPressed("subscript", editor?.isActive("subscript"))}
+            onClick={() => setControlAndRun("subscript", () => editor?.chain().focus().toggleSubscript().run(), () => editor?.isActive("subscript"))}
           />
           <ToolbarButton
             icon={TextSuperscriptIcon}
             label="Superscript"
-            active={editor?.isActive("superscript")}
-            onClick={() => editor?.chain().focus().toggleSuperscript().run()}
+            active={isPressed("superscript", editor?.isActive("superscript"))}
+            onClick={() => setControlAndRun("superscript", () => editor?.chain().focus().toggleSuperscript().run(), () => editor?.isActive("superscript"))}
           />
         </div>
 
@@ -116,38 +152,38 @@ const BlogEditor = ({ onChange, content }) => {
           <ToolbarButton
             icon={TextHIcon}
             label="Paragraph"
-            active={editor?.isActive("paragraph")}
-            onClick={() => editor?.chain().focus().setParagraph().run()}
+            active={isPressed("paragraph", editor?.isActive("paragraph"))}
+            onClick={() => setControlAndRun("paragraph", () => editor?.chain().focus().setParagraph().run(), () => editor?.isActive("paragraph"))}
           />
           <ToolbarButton
             icon={TextHOneIcon}
             label="Heading 1"
-            active={editor?.isActive("heading", { level: 1 })}
-            onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
+            active={isPressed("heading-1", editor?.isActive("heading", { level: 1 }))}
+            onClick={() => setControlAndRun("heading-1", () => editor?.chain().focus().toggleHeading({ level: 1 }).run(), () => editor?.isActive("heading", { level: 1 }))}
           />
           <ToolbarButton
             icon={TextHTwoIcon}
             label="Heading 2"
-            active={editor?.isActive("heading", { level: 2 })}
-            onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+            active={isPressed("heading-2", editor?.isActive("heading", { level: 2 }))}
+            onClick={() => setControlAndRun("heading-2", () => editor?.chain().focus().toggleHeading({ level: 2 }).run(), () => editor?.isActive("heading", { level: 2 }))}
           />
           <ToolbarButton
             icon={TextHThreeIcon}
             label="Heading 3"
-            active={editor?.isActive("heading", { level: 3 })}
-            onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
+            active={isPressed("heading-3", editor?.isActive("heading", { level: 3 }))}
+            onClick={() => setControlAndRun("heading-3", () => editor?.chain().focus().toggleHeading({ level: 3 }).run(), () => editor?.isActive("heading", { level: 3 }))}
           />
           <ToolbarButton
             icon={TextHFourIcon}
             label="Heading 4"
-            active={editor?.isActive("heading", { level: 4 })}
-            onClick={() => editor?.chain().focus().toggleHeading({ level: 4 }).run()}
+            active={isPressed("heading-4", editor?.isActive("heading", { level: 4 }))}
+            onClick={() => setControlAndRun("heading-4", () => editor?.chain().focus().toggleHeading({ level: 4 }).run(), () => editor?.isActive("heading", { level: 4 }))}
           />
           <ToolbarButton
             icon={TextHFiveIcon}
             label="Heading 5"
-            active={editor?.isActive("heading", { level: 5 })}
-            onClick={() => editor?.chain().focus().toggleHeading({ level: 5 }).run()}
+            active={isPressed("heading-5", editor?.isActive("heading", { level: 5 }))}
+            onClick={() => setControlAndRun("heading-5", () => editor?.chain().focus().toggleHeading({ level: 5 }).run(), () => editor?.isActive("heading", { level: 5 }))}
           />
         </div>
 
@@ -155,14 +191,14 @@ const BlogEditor = ({ onChange, content }) => {
           <ToolbarButton
             icon={ListBulletsIcon}
             label="Bullet list"
-            active={editor?.isActive("bulletList")}
-            onClick={() => editor?.chain().focus().toggleBulletList().run()}
+            active={isPressed("bulletList", editor?.isActive("bulletList"))}
+            onClick={() => setControlAndRun("bulletList", () => editor?.chain().focus().toggleBulletList().run(), () => editor?.isActive("bulletList"))}
           />
           <ToolbarButton
             icon={ListNumbersIcon}
             label="Numbered list"
-            active={editor?.isActive("orderedList")}
-            onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+            active={isPressed("orderedList", editor?.isActive("orderedList"))}
+            onClick={() => setControlAndRun("orderedList", () => editor?.chain().focus().toggleOrderedList().run(), () => editor?.isActive("orderedList"))}
           />
         </div>
 
@@ -170,26 +206,26 @@ const BlogEditor = ({ onChange, content }) => {
           <ToolbarButton
             icon={TextAlignLeftIcon}
             label="Align left"
-            active={editor?.isActive({ textAlign: "left" })}
-            onClick={() => editor?.chain().focus().setTextAlign("left").run()}
+            active={isPressed("align-left", checkTextAlign("left"))}
+            onClick={() => setControlAndRun("align-left", () => editor?.chain().focus().setTextAlign("left").run(), () => checkTextAlign("left"))}
           />
           <ToolbarButton
             icon={TextAlignCenterIcon}
             label="Align center"
-            active={editor?.isActive({ textAlign: "center" })}
-            onClick={() => editor?.chain().focus().setTextAlign("center").run()}
+            active={isPressed("align-center", checkTextAlign("center"))}
+            onClick={() => setControlAndRun("align-center", () => editor?.chain().focus().setTextAlign("center").run(), () => checkTextAlign("center"))}
           />
           <ToolbarButton
             icon={TextAlignRightIcon}
             label="Align right"
-            active={editor?.isActive({ textAlign: "right" })}
-            onClick={() => editor?.chain().focus().setTextAlign("right").run()}
+            active={isPressed("align-right", checkTextAlign("right"))}
+            onClick={() => setControlAndRun("align-right", () => editor?.chain().focus().setTextAlign("right").run(), () => checkTextAlign("right"))}
           />
           <ToolbarButton
             icon={TextAlignJustifyIcon}
             label="Justify"
-            active={editor?.isActive({ textAlign: "justify" })}
-            onClick={() => editor?.chain().focus().setTextAlign("justify").run()}
+            active={isPressed("align-justify", checkTextAlign("justify"))}
+            onClick={() => setControlAndRun("align-justify", () => editor?.chain().focus().setTextAlign("justify").run(), () => checkTextAlign("justify"))}
           />
         </div>
 
