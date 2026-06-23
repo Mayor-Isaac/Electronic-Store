@@ -349,6 +349,7 @@ const BlogEditor = ({ onChange, content }) => {
               )
             }
           />
+          
           <ToolbarButton
             icon={ListNumbersIcon}
             label="Numbered list"
